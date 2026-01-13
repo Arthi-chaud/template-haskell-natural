@@ -1,0 +1,11 @@
+name: extract-cons
+version: 1.0.0.0
+copyright: "MIT"
+
+dependencies:
+  - base
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Lib
