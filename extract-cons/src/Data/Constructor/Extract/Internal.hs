@@ -1,4 +1,9 @@
-module Data.Constructor.Extract.Internal (DataAndCon (..), consTypeArgNames, dataAndConFromName) where
+module Data.Constructor.Extract.Internal (
+    -- * Main data type
+    DataAndCon (..),
+    conTypeArgNames,
+    dataAndConFromName,
+) where
 
 import Data.Generics
 import Data.Maybe
@@ -8,7 +13,7 @@ data DataAndCon = MkDataAndCon
     { dataName :: Name
     , dataTypeArgNames :: [Name]
     , conName :: Name
-    , conArgs :: [Type]
+    , conArgs :: [BangType]
     }
     deriving (Eq, Show)
 
@@ -25,7 +30,7 @@ fromDataD (DataD _ dataName tyVarBnd _ cons _) expectedConName = do
     return MkDataAndCon{..}
   where
     getConNameAndArgs (NormalC n bt)
-        | n == expectedConName = Just (n, map snd bt)
+        | n == expectedConName = Just (n, bt)
     getConNameAndArgs _ = Nothing
     tyVarBndToTyName = \case
         PlainTV t _ -> t
@@ -40,14 +45,14 @@ dataAndConFromName :: Name -> Q DataAndCon
 dataAndConFromName name = do
     info <- reify name
     case info of
-        DataConI n t p ->
+        DataConI _ _ p ->
             reify p >>= \case
                 TyConI d@(DataD{}) -> fromDataD d name
                 x -> fail ("Expected data definition, got: " ++ show x)
         x -> fail ("Expected a data constructor, got: " ++ show x)
 
-consTypeArgNames :: DataAndCon -> [Name]
-consTypeArgNames dc = everything (++) ([] `mkQ` getVarName) $ conArgs dc
+conTypeArgNames :: DataAndCon -> [Name]
+conTypeArgNames dc = everything (++) ([] `mkQ` getVarName) $ conArgs dc
   where
     getVarName = \case
         VarT n -> [n]
