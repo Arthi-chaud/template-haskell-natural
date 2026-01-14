@@ -11,11 +11,22 @@ build-type:     Simple
 
 library
   exposed-modules:
-      Lib
+      Data.Constructor.Extract.Class
+      Data.Constructor.Extract.Internal
+      Data.Constructor.Extract.Options
+      Data.Constructor.Extract.TH
+      Test
   other-modules:
       Paths_extract_cons
   hs-source-dirs:
       src
+  default-extensions:
+      TemplateHaskell
+      RecordWildCards
+      MultiParamTypeClasses
+      LambdaCase
   build-depends:
       base
+    , syb
+    , template-haskell
   default-language: Haskell2010
