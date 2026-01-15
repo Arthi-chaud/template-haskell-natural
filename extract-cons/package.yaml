@@ -1,6 +1,5 @@
 name: extract-cons
 version: 1.0.0.0
-copyright: "MIT"
 
 default-extensions:
   - TemplateHaskell

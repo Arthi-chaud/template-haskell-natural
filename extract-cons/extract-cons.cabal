@@ -6,7 +6,6 @@ cabal-version: 1.12
 
 name:           extract-cons
 version:        1.0.0.0
-copyright:      MIT
 build-type:     Simple
 
 library
