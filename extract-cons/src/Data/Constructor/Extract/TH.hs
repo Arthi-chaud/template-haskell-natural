@@ -17,8 +17,8 @@ extractConstructorWithOptions name opts = do
         ]
 
 generateDataDeclaration :: DataAndCon -> ExtractOptions -> Dec
-generateDataDeclaration d@MkDataAndCon{..} opts =
-    DataD [] dataDecName typeBnd Nothing [con] []
+generateDataDeclaration d@MkDataAndCon{..} opts@MkExtractOptions{..} =
+    DataD [] dataDecName typeBnd Nothing [con] [DerivClause Nothing (ConT <$> deriveClasses)]
   where
     con = NormalC (dataConstructorName d opts) conArgs
     dataDecName = dataDeclarationName d opts

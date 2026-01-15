@@ -8,6 +8,8 @@ data ExtractOptions = MkExtractOptions
     , newConName :: String -> String
     -- ^ Build the name of the `constructor` to generate using the original constructor's name
     , deriveClasses :: [Name]
+    -- ^ Add _deriving_ declaration when generating the new data type.
+    -- **WARNING**: This is not guaranteed to type-check. Basic classes like 'Eq' and 'Ord' will work.
     }
 
 defaultOptions :: ExtractOptions
