@@ -1,20 +1,24 @@
-module Data.Constructor.Extract.TH (extractConstructor, extractConstructorWithOptions) where
+module Data.Constructor.Extract.TH (extractConstructor, extractConstructorsOf) where
 
 import Data.Constructor.Extract.Class
 import Data.Constructor.Extract.Internal
 import Data.Constructor.Extract.Options
 import Language.Haskell.TH
 
-extractConstructor :: Name -> DecsQ
-extractConstructor name = extractConstructorWithOptions name defaultOptions
-
-extractConstructorWithOptions :: Name -> ExtractOptions -> DecsQ
-extractConstructorWithOptions name opts = do
+-- | Using a constructor's 'Name', generates a new data type with only this constructor.
+extractConstructor :: Name -> ExtractOptions -> DecsQ
+extractConstructor name opts = do
     dataAndCon <- dataAndConFromName name
     return
         [ generateDataDeclaration dataAndCon opts
         , generateExtractedConInstance dataAndCon opts
         ]
+
+-- | Calls 'extractConstructor' for each constructor of the data type whone 'Name' is passed as parameter.
+extractConstructorsOf :: Name -> ExtractOptions -> DecsQ
+extractConstructorsOf rawDataName opts =
+    conNamesFromTypeName rawDataName
+        >>= (fmap concat . mapM (`extractConstructor` opts))
 
 generateDataDeclaration :: DataAndCon -> ExtractOptions -> Dec
 generateDataDeclaration d@MkDataAndCon{..} opts@MkExtractOptions{..} =

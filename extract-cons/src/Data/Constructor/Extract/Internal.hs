@@ -3,6 +3,7 @@ module Data.Constructor.Extract.Internal (
     DataAndCon (..),
     conTypeArgNames,
     dataAndConFromName,
+    conNamesFromTypeName,
 ) where
 
 import Data.Generics
@@ -50,6 +51,25 @@ dataAndConFromName name = do
                 TyConI d@(DataD{}) -> fromDataD d name
                 x -> fail ("Expected data definition, got: " ++ show x)
         x -> fail ("Expected a data constructor, got: " ++ show x)
+
+conNamesFromTypeName :: Name -> Q [Name]
+conNamesFromTypeName rawDataName = do
+    let strDataName = nameBase rawDataName
+    dataName <-
+        lookupTypeName strDataName >>= \case
+            Just n -> return n
+            Nothing -> fail $ "Could not resolve type name from " ++ strDataName
+    reify dataName >>= \case
+        TyConI (DataD _ _ _ _ cons _) -> return $ conNames `concatMap` cons
+        e -> fail $ "Expected a data declaration, got: " ++ show e
+  where
+    conNames = \case
+        NormalC n _ -> [n]
+        RecC n _ -> [n]
+        InfixC _ n _ -> [n]
+        ForallC _ _ c -> conNames c
+        GadtC ns _ _ -> ns
+        RecGadtC ns _ _ -> ns
 
 conTypeArgNames :: DataAndCon -> [Name]
 conTypeArgNames dc = everything (++) ([] `mkQ` getVarName) $ conArgs dc

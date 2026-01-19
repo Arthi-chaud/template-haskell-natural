@@ -7,8 +7,7 @@ module THSpec (spec) where
 import Data.Constructor.Extract
 import Test.Hspec
 
-extractConstructorWithOptions 'Nothing (defaultOptions{deriveClasses = [''Eq, ''Show]})
-extractConstructorWithOptions 'Just (defaultOptions{deriveClasses = [''Eq, ''Show]})
+extractConstructorsOf ''Maybe (defaultOptions{deriveClasses = [''Eq, ''Show]})
 
 spec :: Spec
 spec =
