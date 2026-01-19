@@ -2,3 +2,4 @@ resolver: lts-23.28 # GHC 9.8.4
 packages:
   - extract-cons
   - natural-th
+  - template-haskell-lenses
