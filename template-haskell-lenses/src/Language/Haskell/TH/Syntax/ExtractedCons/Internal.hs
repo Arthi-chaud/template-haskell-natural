@@ -1,13 +1,17 @@
 {-# LANGUAGE TypeApplications #-}
 
-module Language.Haskell.TH.Syntax.ExtractedCons.Internal (mkExtractedConsLens) where
+module Language.Haskell.TH.Syntax.ExtractedCons.Internal (mkExtractedConsLenses, mkExtractedConsLens) where
 
 import Control.Lens
+import Control.Monad
 import Data.Char
 import Data.Generics.Product.Positions
 import Data.List ((!?))
 import Data.Maybe (maybeToList)
 import Language.Haskell.TH
+
+mkExtractedConsLenses :: Name -> [String] -> DecsQ
+mkExtractedConsLenses extractedConName fieldNames = concat <$> zipWithM (mkExtractedConsLens extractedConName) fieldNames [0 ..]
 
 mkExtractedConsLens :: Name -> String -> Int -> DecsQ
 mkExtractedConsLens extractedConName lensStrName fieldIdx = do

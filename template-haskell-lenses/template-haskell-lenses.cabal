@@ -14,7 +14,6 @@ library
       Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons
       Language.Haskell.TH.Syntax.ExtractedCons.Internal
       Language.Haskell.TH.Syntax.ExtractedCons.Lenses
-      Language.Haskell.TH.Syntax.Lenses
   other-modules:
       Paths_template_haskell_lenses
   hs-source-dirs:
