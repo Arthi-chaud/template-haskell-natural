@@ -5,8 +5,6 @@ module Main where
 main :: IO ()
 main = return ()
 
--- TODO: Split front end and Template Haskell types of tight coupling
-
 -- TODO: Use lenses
 -- TODO: Use TH to derive invariant wrapper, e.g. InstanceD
 
@@ -50,18 +48,47 @@ newtype FuncDefinition f = MkFuncDec f {func :: Dec, pragmas :: [Pragma]}
 -- TODO let + destruction
 
 mkFunc :: Expression '[] t -> FuncDefinition t
--- NOTE: Expression is a monad liked packed reader, first argument confirms that it's ready
--- TODO: Make sure 'return_' is the last statement
+-- NOTE: Expression is a monad liked packed reader, first argument confirms that it's ready + check that last statement is not a bind
 
 mkGetSnd :: FuncDefinition ((a, b) -> b)
 mkGetSnd = mkFunc $ F.do
     tupl <- arg
-    snd' <- deconstruct tupl $ \b -> [|(_, $b)|]
+    snd' <- getField tupl (,) 1
     return_ snd'
 
 mkToJSONFunction :: Type a -> FuncDefinition (a -> Maybe ByteString)
-mkToJSONFunction ty = mkFunc $ do
+mkToJSONFunction ty = mkFunc $ F.do
     a <- arg
     strA <- let_ [|show $(varE a)|]
     -- strA <- letStrict_ [|show $(varE a)|]
     return_ [|Just $(varE strA)|]
+
+mkMaybeFunction :: FunctionDefinition (Maybe Int)
+mkMaybeFunction = mkFunc $ Do.do
+    -- NOTE: Graded monad that checks if the last statement is not a bind
+    n <- bind_ [|Nothing|]
+    -- n <- bindStrict_ [|Nothing|]
+    n0 <- bind_ [|Just (Left 1)|]
+    n1 <- getField n0 'Left 0
+    return_ [|return ($n + $n1)|]
+
+-- TODO: Would be nice to be able deconstruct and get multiple values at once
+
+mkCase :: FunctionDefinition (Maybe Int)
+mkCase = mkFunc $ F.do
+    res <- case_ [|Nothing|] $ M.do
+        matchCon
+            'Just
+            ( \i -> case i of -- the index check does not make sense here as just only has one arg, but it's to showcase the possibilities
+                0 -> constant [|1|]
+                1 -> var
+                _ -> patternMatch (,) (const var) (\[fst', snd'] -> return_ [|$fst' - $snd'|])
+            )
+            (\[] -> return_ [|1|])
+        matchCon
+            'Nothing
+            Nothing -- Nothing to pm on, or could be 'Con {}'
+            (\[] -> return_ [|0|])
+        matchConst [p|Just 1|] $ return_ [|0|]
+        matchVar (\i -> return_ [|0|])
+        matchWild $ return_ [|0|]
