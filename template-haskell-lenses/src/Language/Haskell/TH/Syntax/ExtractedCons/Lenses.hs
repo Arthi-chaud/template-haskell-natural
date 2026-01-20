@@ -35,7 +35,7 @@ mkExtractedConsLenses ''MDoE ["modName", "matches"]
 mkExtractedConsLenses ''CompE ["stmts"]
 mkExtractedConsLenses ''ArithSeqE ["range"]
 mkExtractedConsLenses ''ListE ["items"]
-mkExtractedConsLenses ''SigE ["body", "type_"]
+mkExtractedConsLenses ''SigE ["body", "ty"]
 mkExtractedConsLenses ''RecConE ["name", "fieldExps"]
 mkExtractedConsLenses ''RecUpdE ["expr", "fieldExps"]
 mkExtractedConsLenses ''StaticE ["body"]
@@ -48,7 +48,7 @@ mkExtractedConsLenses ''TypedBracketE ["exp"]
 mkExtractedConsLenses ''TypedSpliceE ["exp"]
 
 #if MIN_VERSION_template_haskell(2,22,0)
-mkExtractedConsLenses ''TypeE ["type_"]
+mkExtractedConsLenses ''TypeE ["ty"]
 #endif
 #if MIN_VERSION_template_haskell(2,23,0)
 mkExtractedConsLenses ''ForallE ["tyVarBndr","expr"]
@@ -78,12 +78,12 @@ mkExtractedConsLenses ''BangP ["body"]
 mkExtractedConsLenses ''AsP ["name", "body"]
 mkExtractedConsLenses ''RecP ["name", "pats"]
 mkExtractedConsLenses ''ListP ["pats"]
-mkExtractedConsLenses ''SigP ["pat", "type_"]
+mkExtractedConsLenses ''SigP ["pat", "ty"]
 mkExtractedConsLenses ''ViewP ["exp", "pat"]
 
 #if MIN_VERSION_template_haskell(2,22,0)
-mkExtractedConsLenses ''TypeP ["type_"]
-mkExtractedConsLenses ''InvisP ["type_"]
+mkExtractedConsLenses ''TypeP ["ty"]
+mkExtractedConsLenses ''InvisP ["ty"]
 mkExtractedConsLenses ''OrP ["pats"]
 #endif
 
@@ -118,7 +118,80 @@ mkExtractedConsLenses ''NormalC ["name", "bt"]
 mkExtractedConsLenses ''RecC ["name", "varBangType"]
 mkExtractedConsLenses ''InfixC ["leftBt", "name", "rightBt"]
 mkExtractedConsLenses ''ForallC ["tyVarBndr", "cxt", "con"]
-mkExtractedConsLenses ''GadtC ["conNames", "bts", "type_"]
-mkExtractedConsLenses ''RecGadtC ["conNames", "vbts", "type_"]
+mkExtractedConsLenses ''GadtC ["conNames", "bts", "ty"]
+mkExtractedConsLenses ''RecGadtC ["conNames", "vbts", "ty"]
 
--- TODO Type, Dec
+mkExtractedConsLenses ''ForallT ["tyVarBndr", "cxt", "ty"]
+mkExtractedConsLenses ''ForallVisT ["tyVarBndr", "ty"]
+mkExtractedConsLenses ''AppT ["callee", "arg"]
+mkExtractedConsLenses ''AppKindT ["callee", "kind"]
+mkExtractedConsLenses ''SigT ["ty", "kind"]
+mkExtractedConsLenses ''VarT ["name"]
+mkExtractedConsLenses ''ConT ["name"]
+mkExtractedConsLenses ''PromotedT ["name"]
+mkExtractedConsLenses ''InfixT ["leftArg", "op", "rightArg"]
+mkExtractedConsLenses ''UInfixT ["leftArg", "op", "rightArg"]
+mkExtractedConsLenses ''PromotedInfixT ["leftArg", "op", "rightArg"]
+mkExtractedConsLenses ''PromotedUInfixT ["leftArg", "op", "rightArg"]
+mkExtractedConsLenses ''ParensT ["body"]
+mkExtractedConsLenses ''TupleT ["count"]
+mkExtractedConsLenses ''UnboxedTupleT ["count"]
+mkExtractedConsLenses ''UnboxedSumT ["count"]
+mkExtractedConsLenses ''PromotedTupleT ["count"]
+mkExtractedConsLenses ''LitT ["lit"]
+mkExtractedConsLenses ''ImplicitParamT ["name", "ty"]
+
+mkExtractedConsLenses ''FunD ["name", "clauses"]
+mkExtractedConsLenses ''ValD ["pat", "body", "where_"]
+mkExtractedConsLenses ''DataD ["cxt", "name", "tyVarBndr", "kind", "con", "derive"]
+mkExtractedConsLenses ''NewtypeD ["cxt", "name", "tyVarBndr", "kind", "con", "derive"]
+mkExtractedConsLenses ''TypeDataD ["name", "tyVarBndr", "kind", "con"]
+mkExtractedConsLenses ''TySynD ["name", "tyVarBndr", "ty"]
+mkExtractedConsLenses ''ClassD ["cxt", "name", "tyVarBndr", "funDep", "decs"]
+mkExtractedConsLenses ''InstanceD ["overlap", "ctx", "ty", "decs"]
+mkExtractedConsLenses ''SigD ["name", "ty"]
+mkExtractedConsLenses ''KiSigD ["name", "kind"]
+mkExtractedConsLenses ''ForeignD ["foreign_"]
+mkExtractedConsLenses ''DefaultD ["types"]
+mkExtractedConsLenses ''PragmaD ["pragma"]
+mkExtractedConsLenses ''DataFamilyD ["name", "tyVarBndr", "kind"]
+mkExtractedConsLenses ''DataInstD ["cxt", "tyVarBndr", "ty", "kind", "con", "derive"]
+mkExtractedConsLenses ''NewtypeInstD ["cxt", "tyVarBndr", "ty", "kind", "con", "derive"]
+mkExtractedConsLenses ''TySynInstD ["tySynEqn"]
+mkExtractedConsLenses ''OpenTypeFamilyD ["tyFamHead"]
+mkExtractedConsLenses ''ClosedTypeFamilyD ["tyFamHead", "tySynEqn"]
+mkExtractedConsLenses ''RoleAnnotD ["name", "role"]
+mkExtractedConsLenses ''StandaloneDerivD ["strat", "cxt", "ty"]
+mkExtractedConsLenses ''DefaultSigD ["name", "ty"]
+mkExtractedConsLenses ''PatSynD ["name", "args", "dir", "pat"]
+mkExtractedConsLenses ''PatSynSigD ["name", "ty"]
+mkExtractedConsLenses ''ImplicitParamBindD ["name", "exp"]
+#if MIN_VERSION_template_haskell(2,22,0)
+mkExtractedConsLenses ''InfixD ["fixity", "namespace", "name"]
+#else
+mkExtractedConsLenses ''InfixD ["fixity", "name"]
+#endif
+
+mkExtractedConsLenses ''DeriveClause ["strat", "cxt"]
+
+mkExtractedConsLenses ''ImportF ["callconv", "safety", "cName", "hName", "ty"]
+mkExtractedConsLenses ''ExportF ["callconv", "cName", "hName", "ty"]
+
+mkExtractedConsLenses ''InlineP ["name", "inline", "rule", "phases"]
+mkExtractedConsLenses ''OpaqueP ["name"]
+
+#if MIN_VERSION_template_haskell(2,24,0)
+mkExtractedConsLenses ''SpecialiseEP ["tyVarbndr", "ruleBndr", "exp", "inline", "phases"]
+mkExtractedConsLenses ''SpecialiseInstEP ["ty"]
+#else
+mkExtractedConsLenses ''SpecialiseP ["name", "ty", "inline", "phases"]
+mkExtractedConsLenses ''SpecialiseInstP ["ty"]
+#endif
+mkExtractedConsLenses ''RuleP ["name", "tyVarBndr", "ruleBndr", "exp0", "exp1", "phases"]
+mkExtractedConsLenses ''AnnP ["target", "exp"]
+mkExtractedConsLenses ''LineP ["idx", "file"]
+mkExtractedConsLenses ''CompleteP ["patNames", "tyName"]
+
+#if MIN_VERSION_template_haskell(2,22,0)
+mkExtractedConsLenses ''SCCP ["fName", "ccName"]
+#endif
