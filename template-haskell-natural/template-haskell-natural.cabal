@@ -4,15 +4,17 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           natural-th
+name:           template-haskell-natural
 version:        1.0.0.0
 build-type:     Simple
 
 library
   exposed-modules:
-      Lib
+      Language.Haskell.TH.Natural.Class
+      Language.Haskell.TH.Natural.Syntax.Class
+      Language.Haskell.TH.Natural.Syntax.Internal
   other-modules:
-      Paths_natural_th
+      Paths_template_haskell_natural
   hs-source-dirs:
       src
   default-extensions:
@@ -20,17 +22,29 @@ library
       RecordWildCards
       MultiParamTypeClasses
       LambdaCase
+      FunctionalDependencies
+      MultiParamTypeClasses
+      DeriveFunctor
+      KindSignatures
+      DataKinds
+      GeneralizedNewtypeDeriving
+      FlexibleInstances
+      FlexibleContexts
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base
+    , extract-cons
+    , lens
+    , mtl
     , template-haskell
+    , template-haskell-lenses
   default-language: Haskell2010
 
 test-suite unit
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_natural_th
+      Paths_template_haskell_natural
   hs-source-dirs:
       test
   default-extensions:
@@ -38,6 +52,14 @@ test-suite unit
       RecordWildCards
       MultiParamTypeClasses
       LambdaCase
+      FunctionalDependencies
+      MultiParamTypeClasses
+      DeriveFunctor
+      KindSignatures
+      DataKinds
+      GeneralizedNewtypeDeriving
+      FlexibleInstances
+      FlexibleContexts
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base

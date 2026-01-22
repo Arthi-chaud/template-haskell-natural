@@ -1,4 +1,4 @@
-name: natural-th
+name: template-haskell-natural
 version: 1.0.0.0
 
 default-extensions:
@@ -6,6 +6,14 @@ default-extensions:
   - RecordWildCards
   - MultiParamTypeClasses
   - LambdaCase
+  - FunctionalDependencies
+  - MultiParamTypeClasses
+  - DeriveFunctor
+  - KindSignatures
+  - DataKinds
+  - GeneralizedNewtypeDeriving
+  - FlexibleInstances
+  - FlexibleContexts
 
 dependencies:
   - base
@@ -24,7 +32,11 @@ ghc-options:
 
 library:
   source-dirs: src
-
+  dependencies:
+    - extract-cons
+    - template-haskell-lenses
+    - mtl
+    - lens
 tests:
   unit:
     main: Spec.hs
