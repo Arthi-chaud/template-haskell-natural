@@ -52,11 +52,14 @@ mkExtractedConsLensInstance extractedConName lensName fieldIdx = do
             ]
 
 mkExtractedConsLensClass :: Name -> DecQ
-mkExtractedConsLensClass lensName = do
+mkExtractedConsLensClass lensName =
     return $
         ClassD
             []
             (lensClassName lensName)
-            [PlainTV (mkName "a") BndrReq, PlainTV (mkName "b") BndrReq]
-            []
-            [SigD lensName (ConT ''Lens' `AppT` VarT (mkName "a") `AppT` VarT (mkName "b"))]
+            [PlainTV a BndrReq, PlainTV b BndrReq]
+            [FunDep [a, b] [a, b]]
+            [SigD lensName (ConT ''Lens' `AppT` VarT a `AppT` VarT b)]
+  where
+    a = mkName "a"
+    b = mkName "b"
