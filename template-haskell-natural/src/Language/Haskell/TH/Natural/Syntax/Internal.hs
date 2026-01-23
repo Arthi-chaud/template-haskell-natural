@@ -1,9 +1,10 @@
 module Language.Haskell.TH.Natural.Syntax.Internal where
 
+import Control.Monad.State
 import qualified Language.Haskell.TH as TH
 
--- | Used for type-level tracking of the state/readiness of an AST-building computation
-data ASTBuilderState a = Empty | Step a | Ready deriving (Eq, Show)
+-- | Common type for anything that builds a TH AST.
+type Builder s a = StateT s TH.Q a
 
 -- | Represents an identifier name
 newtype Name = MkName {unN :: TH.Name}

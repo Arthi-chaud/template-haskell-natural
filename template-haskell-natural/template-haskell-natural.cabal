@@ -12,6 +12,8 @@ library
   exposed-modules:
       Language.Haskell.TH.Natural.Class
       Language.Haskell.TH.Natural.Syntax.Class
+      Language.Haskell.TH.Natural.Syntax.Common
+      Language.Haskell.TH.Natural.Syntax.Instance
       Language.Haskell.TH.Natural.Syntax.Internal
   other-modules:
       Paths_template_haskell_natural
