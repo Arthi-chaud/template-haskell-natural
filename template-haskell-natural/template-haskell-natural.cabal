@@ -13,8 +13,11 @@ library
       Language.Haskell.TH.Natural.Class
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common
+      Language.Haskell.TH.Natural.Syntax.Expression
+      Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance
       Language.Haskell.TH.Natural.Syntax.Internal
+      Language.Haskell.TH.Natural.Syntax.Signature
   other-modules:
       Paths_template_haskell_natural
   hs-source-dirs:
