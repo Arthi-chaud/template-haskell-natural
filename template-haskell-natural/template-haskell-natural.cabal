@@ -13,10 +13,12 @@ library
       Language.Haskell.TH.Natural.Class
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common
-      Language.Haskell.TH.Natural.Syntax.Expression
+      Language.Haskell.TH.Natural.Syntax.Expr
       Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance
       Language.Haskell.TH.Natural.Syntax.Internal
+      Language.Haskell.TH.Natural.Syntax.Internal.Builder
+      Language.Haskell.TH.Natural.Syntax.Internal.Name
       Language.Haskell.TH.Natural.Syntax.Signature
   other-modules:
       Paths_template_haskell_natural
@@ -35,6 +37,9 @@ library
       GeneralizedNewtypeDeriving
       FlexibleInstances
       FlexibleContexts
+      TupleSections
+      IncoherentInstances
+      TypeFamilies
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base
@@ -65,6 +70,9 @@ test-suite unit
       GeneralizedNewtypeDeriving
       FlexibleInstances
       FlexibleContexts
+      TupleSections
+      IncoherentInstances
+      TypeFamilies
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base

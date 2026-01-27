@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+
 module Language.Haskell.TH.Natural.Syntax.Class (
     -- * Types
     ClassDefinition,
@@ -6,7 +8,7 @@ module Language.Haskell.TH.Natural.Syntax.Class (
     -- * Variable binding
     newTypeVar,
 
-    -- * Class
+    -- * Functions
     newClass,
     addTypeVar,
     addFunDep,
@@ -24,7 +26,7 @@ import Language.Haskell.TH.Syntax.ExtractedCons
 
 type ClassDefinition = Q ClassD
 
-type ClassBuilder a = Builder ClassD a
+type ClassBuilder a = ConstBuilder ClassD a
 
 -- | Binds a new type variable to be used across the class definition
 newTypeVar :: ClassBuilder TypeVarName
@@ -32,7 +34,7 @@ newTypeVar = fmap coerce $ lift $ newName "n"
 
 -- | Starts the building of a class declaration, using its name and a 'ClassBuilder'
 newClass :: String -> ClassBuilder () -> ClassDefinition
-newClass className next = execStateT next class_
+newClass className next = runBaseConstBuilder next class_
   where
     class_ = MkClassD [] (mkName className) [] [] []
 

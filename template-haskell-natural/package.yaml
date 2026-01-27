@@ -14,6 +14,9 @@ default-extensions:
   - GeneralizedNewtypeDeriving
   - FlexibleInstances
   - FlexibleContexts
+  - TupleSections
+  - IncoherentInstances
+  - TypeFamilies
 
 dependencies:
   - base

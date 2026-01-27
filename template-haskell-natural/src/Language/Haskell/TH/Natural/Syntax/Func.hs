@@ -1,18 +1,19 @@
 module Language.Haskell.TH.Natural.Syntax.Func (
     -- * Builder
-    func,
     FuncDefinition,
     FuncBuilder,
+
+    -- * State
     FuncBuilderState (..),
 
-    -- * Clause
+    -- * Functions
+    newFunc,
+    --- * Clause
     addClause,
     bodyFromExp,
-
-    -- * Signature
+    --- * Signature
     setSignature,
-
-    -- * Pragmas
+    --- * Pragmas
     inline,
     setInline,
     addPragma,
@@ -37,14 +38,16 @@ data FuncBuilderState = MkFBS
 
 makeLenses ''FuncBuilderState
 
-type FuncBuilder a = Builder FuncBuilderState a
+type FuncBuilder a = ConstBuilder FuncBuilderState a
+
+-- TODO Should not be ready if 0 clause
 
 setSignature :: SigD -> FuncBuilder ()
 setSignature s = signature .= Just s
 
-func :: String -> FuncBuilder () -> FuncDefinition
-func fName builder = do
-    MkFBS{..} <- execStateT builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
+newFunc :: String -> FuncBuilder () -> FuncDefinition
+newFunc fName builder = do
+    MkFBS{..} <- runBaseConstBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
     return (fromExtractedCon _dec : (fromExtractedCon <$> maybeToList _signature) ++ (TH.PragmaD <$> _pragmas))
 
 -- | Add a clause to the function

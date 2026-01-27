@@ -1,4 +1,14 @@
-module Language.Haskell.TH.Natural.Syntax.Instance where
+module Language.Haskell.TH.Natural.Syntax.Instance (
+    -- * Types
+    InstanceDefinition,
+    InstanceBuilder,
+
+    -- * Functions
+    newInstance,
+    setOverlap,
+    unsetOverlap,
+    addInstanceArg,
+) where
 
 import Control.Lens
 import Control.Monad.State
@@ -9,10 +19,10 @@ import Language.Haskell.TH.Syntax.ExtractedCons
 
 type InstanceDefinition = Q InstanceD
 
-type InstanceBuilder a = Builder InstanceD a
+type InstanceBuilder a = ConstBuilder InstanceD a
 
 newInstance :: TH.Name -> InstanceBuilder () -> InstanceDefinition
-newInstance className builder = execStateT builder instance_
+newInstance className builder = runBaseConstBuilder builder instance_
   where
     instance_ = MkInstanceD Nothing [] (TH.ConT className) []
 
