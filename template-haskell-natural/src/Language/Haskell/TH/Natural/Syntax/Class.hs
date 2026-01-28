@@ -20,6 +20,7 @@ import Control.Monad.State
 import Data.Coerce (coerce)
 import Language.Haskell.TH hiding (cxt, funDep)
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Natural.Class (THBuilder, gen)
 import Language.Haskell.TH.Natural.Syntax.Common
 import Language.Haskell.TH.Natural.Syntax.Internal
 import Language.Haskell.TH.Syntax.ExtractedCons
@@ -27,10 +28,6 @@ import Language.Haskell.TH.Syntax.ExtractedCons
 type ClassDefinition = Q ClassD
 
 type ClassBuilder a = ConstBuilder ClassD a
-
--- | Binds a new type variable to be used across the class definition
-newTypeVar :: ClassBuilder TypeVarName
-newTypeVar = fmap coerce $ lift $ newName "n"
 
 -- | Starts the building of a class declaration, using its name and a 'ClassBuilder'
 newClass :: String -> ClassBuilder () -> ClassDefinition
@@ -49,6 +46,8 @@ addTypeVar tyN vis mkind =
 addFunDep :: [TypeVarName] -> [TypeVarName] -> ClassBuilder ()
 addFunDep l r = funDep %= (++ [FunDep (fmap coerce l) (fmap coerce r)])
 
--- | Alias to 'addBody'
-addSignature :: Q TH.Dec -> ClassBuilder ()
-addSignature = addBody
+-- | Add a function signature to the class
+addSignature :: (THBuilder a TH.Type) => String -> a -> ClassBuilder ()
+addSignature fName tyBuilder = do
+    sigTy <- lift $ gen tyBuilder
+    addBody $ pure $ TH.SigD (mkName fName) sigTy

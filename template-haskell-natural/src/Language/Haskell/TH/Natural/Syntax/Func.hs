@@ -25,6 +25,7 @@ import Data.Constructor.Extract
 import Data.Maybe (maybeToList)
 import Language.Haskell.TH (Q, mkName)
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Natural.Class (THBuilder, gen)
 import Language.Haskell.TH.Natural.Syntax.Internal
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline)
 
@@ -42,8 +43,12 @@ type FuncBuilder a = ConstBuilder FuncBuilderState a
 
 -- TODO Should not be ready if 0 clause
 
-setSignature :: SigD -> FuncBuilder ()
-setSignature s = signature .= Just s
+setSignature :: (THBuilder a TH.Type) => a -> FuncBuilder ()
+setSignature sigBuilder = do
+    sig <- lift $ gen sigBuilder
+    fName <- gets (^. (dec . name))
+    signature .= Just (MkSigD fName sig)
+    return ()
 
 newFunc :: String -> FuncBuilder () -> FuncDefinition
 newFunc fName builder = do

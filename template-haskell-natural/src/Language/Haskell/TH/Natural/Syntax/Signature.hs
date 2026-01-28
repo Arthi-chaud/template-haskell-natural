@@ -1,3 +1,6 @@
+{-# LANGUAGE QualifiedDo #-}
+
+-- | In Template Haskell, a signature ('SigD') refers to a symbol's type signature with a 'Name' (e.g. _length :: [a] -> Int_). Here, by _signature_, we mean just the type signature, without a name.
 module Language.Haskell.TH.Natural.Syntax.Signature (
     -- * Types
     SignatureDefinition,
@@ -5,21 +8,71 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
 
     -- * State
     SignatureState (..),
+    tyVarBndr,
+    constraints,
+    params,
+    result,
 
     -- * Functions
-    signature,
+    newSignature,
+    newTypeVar,
+    addToForall,
+    addConstraint,
+    addParam,
+    setResultType,
 ) where
 
-import Language.Haskell.TH (Q)
+import Control.Lens ((|>=))
+import Control.Lens.TH
+import Control.Monad.State (MonadTrans (lift))
+import Data.Coerce
+import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Natural.Class (THBuilder, gen)
 import Language.Haskell.TH.Natural.Syntax.Internal
-import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline)
+import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline, tyVarBndr)
 
-type SignatureDefinition = Q SigD
+type SignatureDefinition = Q ForallT
 
-type SignatureBuilder a = Builder SignatureState Ready Ready a
+type SignatureBuilder prev next a = Builder SignatureState prev next a
 
-data SignatureState st = MkSBS {params :: [TH.Type], constraints :: [TH.Type], result :: StepType st TH.Type}
+data SignatureState st = MkSBS
+    { _tyVarBndr :: [TH.TyVarBndr TH.Specificity]
+    , _constraints :: [TH.Type]
+    , _params :: [TH.Type]
+    , _result :: StepType st TH.Type
+    }
 
-signature :: SignatureBuilder () -> SignatureDefinition
-signature = undefined
+makeLenses ''SignatureState
+
+newSignature :: SignatureBuilder Empty Ready () -> SignatureDefinition
+newSignature builder = do
+    MkSBS{..} <- runBaseBuilder builder (MkSBS [] [] [] ())
+    let funcType = foldr (\param -> ((ArrowT `AppT` param) `AppT`)) _result _params
+    return $ MkForallT _tyVarBndr _constraints funcType
+
+-- | Adds the given type variable to the _forall_ list.
+--
+-- Using this function should comply with the 'forall-or-nothing' rule (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/explicit_forall.html#the-forall-or-nothing-rule)
+addToForall :: TypeVarName -> SignatureBuilder step step ()
+addToForall tyVar = tyVarBndr |>= TH.PlainTV (coerce tyVar) TH.SpecifiedSpec
+
+-- | Add the given type to the set of constraints
+addConstraint :: (THBuilder a TH.Type) => a -> SignatureBuilder step step ()
+addConstraint tyBuilder = do
+    constr <- lift $ gen tyBuilder
+    constraints |>= constr
+
+-- | Set the type as the nth parameter of the function's signature
+--
+-- (n being the number of time 'addParam' was called)
+addParam :: (THBuilder a TH.Type) => a -> SignatureBuilder step step ()
+addParam tyBuilder = do
+    param <- lift $ gen tyBuilder
+    params |>= param
+
+-- | Set the result type in the function's signature
+setResultType :: (THBuilder a TH.Type) => a -> SignatureBuilder step Ready ()
+setResultType tyBuilder = MkB $ \MkSBS{..} -> do
+    _result <- gen tyBuilder
+    return (MkSBS{..}, ())
