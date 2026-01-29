@@ -17,6 +17,7 @@ default-extensions:
   - TupleSections
   - IncoherentInstances
   - TypeFamilies
+  - PolyKinds
 
 dependencies:
   - base

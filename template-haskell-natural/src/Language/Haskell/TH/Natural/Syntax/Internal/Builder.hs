@@ -1,7 +1,7 @@
-{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE StandaloneKindSignatures #-}
 
 module Language.Haskell.TH.Natural.Syntax.Internal.Builder (
     -- * Main Builders
@@ -28,6 +28,7 @@ import Data.Tuple (swap)
 import qualified Language.Haskell.TH as TH
 import Prelude hiding ((>>=))
 import qualified Prelude
+import Data.Kind (Type)
 
 -- | A computation that builds an object, the state, whose definition is parameterised by the _step_ of the computation
 --
@@ -89,6 +90,7 @@ data BuilderStep
       Ready
     deriving (Eq, Ord, Show)
 
-type family StepType step a where
-    StepType Empty a = ()
-    StepType Ready a = a
+type StepType :: k -> Type -> Type
+type family StepType (step :: k) a
+type instance StepType Empty a = ()
+type instance StepType Ready a = a
