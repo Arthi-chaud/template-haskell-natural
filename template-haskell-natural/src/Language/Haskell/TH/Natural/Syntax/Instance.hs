@@ -22,20 +22,20 @@ type InstanceDefinition = Q InstanceD
 type InstanceBuilder a = ConstBuilder InstanceD a
 
 newInstance :: TH.Name -> InstanceBuilder () -> InstanceDefinition
-newInstance className builder = runBaseConstBuilder builder instance_
+newInstance className builder = runBaseBuilder builder instance_
   where
     instance_ = MkInstanceD Nothing [] (TH.ConT className) []
 
 -- | Set an 'Overlap' pragma to the instance
 setOverlap :: TH.Overlap -> InstanceBuilder ()
-setOverlap = zoomConst . (overlap ?=)
+setOverlap = (overlap ?=)
 
 -- | Unset the 'Overlap' pragma associated with the instance (if any)
 unsetOverlap :: InstanceBuilder ()
-unsetOverlap = zoomConst $ overlap .= (Nothing :: Maybe TH.Overlap)
+unsetOverlap = overlap .= (Nothing :: Maybe TH.Overlap)
 
 -- | Add an type argument to the instance
 addInstanceArg :: TH.Q TH.Type -> InstanceBuilder ()
 addInstanceArg qty = do
     ty' <- lift qty
-    zoomConst $ ty %= (`TH.AppT` ty')
+    unsafeWithState $ ty %= (`TH.AppT` ty')

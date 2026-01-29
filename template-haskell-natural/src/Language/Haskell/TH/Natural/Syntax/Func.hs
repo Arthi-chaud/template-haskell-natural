@@ -44,26 +44,26 @@ type FuncBuilder a = ConstBuilder FuncBuilderState a
 -- TODO Should not be ready if 0 clause
 
 setSignature :: (THBuilder a TH.Type) => a -> FuncBuilder ()
-setSignature sigBuilder = zoomConst $ do
+setSignature sigBuilder = do
     sig <- lift $ gen sigBuilder
-    fName <- gets (^. (dec . name))
+    fName <- view (dec . name)
     signature ?= MkSigD fName sig
     return ()
 
 newFunc :: String -> FuncBuilder () -> FuncDefinition
 newFunc fName builder = do
-    MkFBS{..} <- getConst <$> runBaseBuilder builder (Const $ MkFBS [] (MkFunD (mkName fName) []) Nothing)
+    MkFBS{..} <- runBaseBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
     return (fromExtractedCon _dec : (fromExtractedCon <$> maybeToList _signature) ++ (TH.PragmaD <$> _pragmas))
 
 -- | Add a clause to the function
 addClause :: Clause -> FuncBuilder ()
-addClause c = zoomConst $ (dec . clauses) |>= c
+addClause c = (dec . clauses) |>= c
 
 -- | Uses an Exp as the body of a function
 --
 -- Warning: This operation is destructive, and replaces all previous clauses set using 'addClause'
 bodyFromExp :: Q TH.Exp -> FuncBuilder ()
-bodyFromExp qe = zoomConst $ do
+bodyFromExp qe = do
     e <- lift qe
     (dec . clauses) .= [TH.Clause [] (TH.NormalB e) []]
 
@@ -73,13 +73,13 @@ inline = setInline TH.Inline TH.FunLike TH.AllPhases
 
 -- | Sets an inline pragma to the function
 setInline :: TH.Inline -> TH.RuleMatch -> TH.Phases -> FuncBuilder ()
-setInline i rm phs = zoomConst $ do
-    fName <- gets (^. (dec . name))
+setInline i rm phs = do
+    fName <- view (dec . name)
     modify $ over pragmas $ filter $ \case
         TH.InlineP{} -> False
         _ -> True
     let newInlineP = TH.InlineP fName i rm phs
-    modify $ over pragmas (newInlineP :)
+    pragmas <|= newInlineP
 
 addPragma :: TH.Pragma -> FuncBuilder ()
-addPragma p = zoomConst $ modify $ over pragmas (p :)
+addPragma p = pragmas <|= p

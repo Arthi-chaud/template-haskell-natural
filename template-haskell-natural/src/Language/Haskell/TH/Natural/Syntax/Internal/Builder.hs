@@ -1,96 +1,90 @@
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE StandaloneKindSignatures #-}
 
 module Language.Haskell.TH.Natural.Syntax.Internal.Builder (
     -- * Main Builders
     Builder,
     ConstBuilder,
-
-    -- * Steps
-    BuilderStep (..),
-    StepType,
+    liftQ,
 
     -- * Base Builder
     BaseBuilder (..),
     runBaseBuilder,
-    runBaseConstBuilder,
     (>>=),
-    
-    -- * Const
-    zoomConst
+    (>>),
+
+    -- * Steps
+    BuilderStep(..),
+
+    -- * Unsafe
+   unsafeWithState ,
+   unsafeCastStep,
 ) where
 
 import Control.Monad.State
-import Data.Functor.Const
-import Data.Tuple (swap)
 import qualified Language.Haskell.TH as TH
-import Prelude hiding ((>>=))
+import Prelude hiding ((>>=), (>>))
 import qualified Prelude
-import Data.Kind (Type)
+import Control.Monad.Reader
 
--- | A computation that builds an object, the state, whose definition is parameterised by the _step_ of the computation
+-- | A computation that builds an object, the state 
 --
--- Basically a graded state monad
-newtype BaseBuilder s (prev :: k) next m a
-    = MkB {unB :: s prev -> m (s next, a)}
+-- A graded state monad
+newtype BaseBuilder s (prev :: k) (next :: k) m a
+    = MkB {unB :: StateT s m a}
     deriving (Functor)
 
 instance (Monad m) => Applicative (BaseBuilder s step step m) where
-    pure a = MkB (\s -> pure (s, a))
-    liftA2 pair (MkB f1) (MkB f2) = MkB $ \s -> do
-        (s1, a) <- f1 s
-        (s2, b) <- f2 s1
-        return (s2, pair a b)
+    pure a = MkB $ pure a
+    liftA2 pair (MkB f1) (MkB f2) = MkB $ do
+        a <- f1
+        pair a <$> f2
 
 instance (Monad m) => Monad (BaseBuilder s step step m) where
-    (>>=) (MkB f1) f2 = MkB $ \s -> Prelude.do
-        (s1, a) <- f1 s
-        (s2, b) <- unB (f2 a) s1
-        return (s2, b)
-
-instance (Monad m) => MonadState (s step) (BaseBuilder s step step m) where
-    state f = MkB $ \s -> pure $ swap $ f s
+    (>>=) (MkB f1) f2 = MkB $  Prelude.do
+        a <- f1
+        unB (f2 a)
 
 instance MonadTrans (BaseBuilder s step step) where
-    lift m = MkB $ \s -> (s,) <$> m
+    lift m = MkB $ lift m
+
+instance Monad m => MonadReader s (BaseBuilder s step step m) where
+    ask = MkB  get
+    local f m = MkB (modify f) Prelude.>> m
 
 {-# INLINE runBaseBuilder #-}
-runBaseBuilder :: Builder s step end () -> s step -> TH.Q (s end)
-runBaseBuilder (MkB f) s = fmap fst (f s)
-
-{-# INLINE runBaseConstBuilder #-}
-runBaseConstBuilder :: ConstBuilder s () -> s  -> TH.Q s
-runBaseConstBuilder builder s = getConst <$> runBaseBuilder builder (Const s)
+runBaseBuilder :: Builder s step end () -> s -> TH.Q s
+runBaseBuilder (MkB f)  = execStateT f
 
 {-# INLINE (>>=) #-}
 (>>=) :: Builder s prev curr a -> (a -> Builder s curr next b) -> Builder s prev next b
-(>>=) (MkB f1) f2 = MkB $ \s -> do
-    (s1, a) <- f1 s
-    (s2, b) <- unB (f2 a) s1
-    return (s2, b)
+(>>=) (MkB f1) f2 = MkB $  Prelude.do
+        a <- f1
+        unB (f2 a)
+
+{-# INLINE (>>) #-}
+(>>) :: Builder s prev curr a ->  Builder s curr next b -> Builder s prev next b
+(>>) f1 f2 = f1 >>= const f2
 
 -- | Common type for anything that builds a TH AST.
 type Builder s (prev) (next) a = BaseBuilder s prev next TH.Q a
 
 -- | Similar to 'Builder', but the state is always 'Ready' 
-type ConstBuilder s a = BaseBuilder (Const s) Ready Ready TH.Q a
+type ConstBuilder s a = BaseBuilder s () () TH.Q a
 
-zoomConst :: Monad m => StateT s m a -> BaseBuilder (Const s) step step m a
-zoomConst m = MkB $ \(Const s) -> do 
-    (a, s') <-runStateT  m s
-    return (Const s', a)
+instance Monad m => MonadState s (BaseBuilder s () () m) where
+    state f = MkB $ state f
 
--- | Describes the current state of the builder
-data BuilderStep
-    = -- | Means that the object being built is not ready to be reified
-      Empty
-    | -- | The object is ready to be computed/reified
-      Ready
-    deriving (Eq, Ord, Show)
+liftQ :: TH.Q a -> BaseBuilder s step step TH.Q a
+liftQ = MkB . lift
 
-type StepType :: k -> Type -> Type
-type family StepType (step :: k) a
-type instance StepType Empty a = ()
-type instance StepType Ready a = a
+-- | Allows accessing and modifying the state.
+--
+-- Using this to modify the state breaks the security provided by the type-level tracking of state.
+unsafeWithState :: StateT s m a -> BaseBuilder s prev curr m a
+unsafeWithState = MkB
+
+unsafeCastStep :: forall prev' curr'  prev curr m s a. BaseBuilder s prev curr m a -> BaseBuilder s prev' curr' m a
+unsafeCastStep (MkB m) = MkB m
+
+data BuilderStep = Empty | Ready deriving (Eq, Show)

@@ -31,24 +31,23 @@ type ClassBuilder a = ConstBuilder ClassD a
 
 -- | Starts the building of a class declaration, using its name and a 'ClassBuilder'
 newClass :: String -> ClassBuilder () -> ClassDefinition
-newClass className next = runBaseConstBuilder next class_
+newClass className next = runBaseBuilder next class_
   where
     class_ = MkClassD [] (mkName className) [] [] []
 
 -- | Add the given 'TypeVar' to the class' arguments
 addTypeVar :: TypeVarName -> BndrVis -> Maybe TH.Kind -> ClassBuilder ()
 addTypeVar tyN vis mkind =
-    zoomConst $
-        tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
+    tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
   where
     n = coerce tyN
 
 -- | Add functional dependencies
 addFunDep :: [TypeVarName] -> [TypeVarName] -> ClassBuilder ()
-addFunDep l r = zoomConst $ funDep %= (++ [FunDep (fmap coerce l) (fmap coerce r)])
+addFunDep l r = funDep |>= FunDep (fmap coerce l) (fmap coerce r)
 
 -- | Add a function signature to the class
 addSignature :: (THBuilder a TH.Type) => String -> a -> ClassBuilder ()
 addSignature fName tyBuilder = do
     sigTy <- lift $ gen tyBuilder
-    zoomConst $ addBody $ pure $ TH.SigD (mkName fName) sigTy
+    addBody $ pure $ TH.SigD (mkName fName) sigTy
