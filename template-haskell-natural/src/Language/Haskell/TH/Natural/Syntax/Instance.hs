@@ -28,7 +28,7 @@ newInstance className builder = runBaseConstBuilder builder instance_
 
 -- | Set an 'Overlap' pragma to the instance
 setOverlap :: TH.Overlap -> InstanceBuilder ()
-setOverlap = (overlap .=) . Just
+setOverlap = (overlap ?=)
 
 -- | Unset the 'Overlap' pragma associated with the instance (if any)
 unsetOverlap :: InstanceBuilder ()

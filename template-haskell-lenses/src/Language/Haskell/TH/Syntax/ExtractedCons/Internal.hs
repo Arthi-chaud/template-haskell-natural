@@ -58,7 +58,7 @@ mkExtractedConsLensClass lensName =
             []
             (lensClassName lensName)
             [PlainTV a BndrReq, PlainTV b BndrReq]
-            [FunDep [a, b] [a, b]]
+            [FunDep [a] [b]]
             [SigD lensName (ConT ''Lens' `AppT` VarT a `AppT` VarT b)]
   where
     a = mkName "a"

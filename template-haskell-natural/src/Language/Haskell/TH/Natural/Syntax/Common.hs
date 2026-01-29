@@ -8,16 +8,16 @@ import Language.Haskell.TH.Syntax.ExtractedCons
 addContext :: (MonadTrans t, Monad m, MonadState s (t m), HasCxt s [a]) => m a -> t m ()
 addContext qty = do
     ty_ <- lift qty
-    cxt %= (++ [ty_])
+    cxt |>= ty_
 
 -- | Add a 'Dec'
 addBody :: (MonadTrans t, Monad m, MonadState s (t m), HasDecs s [a]) => m a -> t m ()
 addBody s = do
     dec <- lift s
-    decs %= (++ [dec])
+    decs |>= dec
 
 -- | Add many 'Dec's
 addBody' :: (MonadTrans t, Monad m, MonadState s (t m), HasDecs s [a]) => [m a] -> t m ()
 addBody' s = do
     dec' <- lift $ sequence s
-    decs %= (++ dec')
+    decs <>= dec'

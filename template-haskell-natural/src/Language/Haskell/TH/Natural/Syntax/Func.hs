@@ -47,7 +47,7 @@ setSignature :: (THBuilder a TH.Type) => a -> FuncBuilder ()
 setSignature sigBuilder = do
     sig <- lift $ gen sigBuilder
     fName <- gets (^. (dec . name))
-    signature .= Just (MkSigD fName sig)
+    signature ?= MkSigD fName sig
     return ()
 
 newFunc :: String -> FuncBuilder () -> FuncDefinition
@@ -57,7 +57,7 @@ newFunc fName builder = do
 
 -- | Add a clause to the function
 addClause :: Clause -> FuncBuilder ()
-addClause c = (dec . clauses) %= (++ [c])
+addClause c = (dec . clauses) |>= c
 
 -- | Uses an Exp as the body of a function
 --

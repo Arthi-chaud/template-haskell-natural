@@ -38,7 +38,7 @@ newClass className next = runBaseConstBuilder next class_
 -- | Add the given 'TypeVar' to the class' arguments
 addTypeVar :: TypeVarName -> BndrVis -> Maybe TH.Kind -> ClassBuilder ()
 addTypeVar tyN vis mkind =
-    tyVarBndr %= (maybe (PlainTV n vis) (KindedTV n vis) mkind :)
+    tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
   where
     n = coerce tyN
 
