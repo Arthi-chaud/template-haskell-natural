@@ -28,14 +28,14 @@ newInstance className builder = runBaseConstBuilder builder instance_
 
 -- | Set an 'Overlap' pragma to the instance
 setOverlap :: TH.Overlap -> InstanceBuilder ()
-setOverlap = (overlap ?=)
+setOverlap = zoomConst . (overlap ?=)
 
 -- | Unset the 'Overlap' pragma associated with the instance (if any)
 unsetOverlap :: InstanceBuilder ()
-unsetOverlap = overlap .= (Nothing :: Maybe TH.Overlap)
+unsetOverlap = zoomConst $ overlap .= (Nothing :: Maybe TH.Overlap)
 
 -- | Add an type argument to the instance
 addInstanceArg :: TH.Q TH.Type -> InstanceBuilder ()
 addInstanceArg qty = do
     ty' <- lift qty
-    ty %= (`TH.AppT` ty')
+    zoomConst $ ty %= (`TH.AppT` ty')

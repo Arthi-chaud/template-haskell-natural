@@ -38,16 +38,17 @@ newClass className next = runBaseConstBuilder next class_
 -- | Add the given 'TypeVar' to the class' arguments
 addTypeVar :: TypeVarName -> BndrVis -> Maybe TH.Kind -> ClassBuilder ()
 addTypeVar tyN vis mkind =
-    tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
+    zoomConst $
+        tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
   where
     n = coerce tyN
 
 -- | Add functional dependencies
 addFunDep :: [TypeVarName] -> [TypeVarName] -> ClassBuilder ()
-addFunDep l r = funDep %= (++ [FunDep (fmap coerce l) (fmap coerce r)])
+addFunDep l r = zoomConst $ funDep %= (++ [FunDep (fmap coerce l) (fmap coerce r)])
 
 -- | Add a function signature to the class
 addSignature :: (THBuilder a TH.Type) => String -> a -> ClassBuilder ()
 addSignature fName tyBuilder = do
     sigTy <- lift $ gen tyBuilder
-    addBody $ pure $ TH.SigD (mkName fName) sigTy
+    zoomConst $ addBody $ pure $ TH.SigD (mkName fName) sigTy

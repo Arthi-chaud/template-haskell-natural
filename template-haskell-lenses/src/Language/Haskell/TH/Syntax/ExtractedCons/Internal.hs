@@ -20,15 +20,15 @@ mkExtractedConsLens extractedConName lensStrName fieldIdx = do
         lookupTypeName (nameBase $ lensClassName lensName) >>= \case
             Nothing -> Just <$> mkExtractedConsLensClass lensName
             Just _ -> return Nothing
-    instance_ <- mkExtractedConsLensInstance extractedConName lensName fieldIdx
-    return (maybeToList class_ ++ [instance_])
+    instances_ <- mkExtractedConsLensInstance extractedConName lensName fieldIdx
+    return (maybeToList class_ ++ instances_)
 
 lensClassName :: Name -> Name
 lensClassName lensName = mkName $ "Has" ++ capitalize (nameBase lensName)
   where
     capitalize = over _head toUpper
 
-mkExtractedConsLensInstance :: Name -> Name -> Int -> DecQ
+mkExtractedConsLensInstance :: Name -> Name -> Int -> DecsQ
 mkExtractedConsLensInstance extractedConName lensName fieldIdx = do
     (tyArgs, bt) <-
         reify extractedConName >>= \case
@@ -41,15 +41,25 @@ mkExtractedConsLensInstance extractedConName lensName fieldIdx = do
             e -> fail $ "Expected a data type with extractly one constructor, got: " ++ show e
     fieldType <- snd <$> maybe (fail "Invalid field index") return (bt !? fieldIdx)
     let sourceTy = foldl (\rest t -> rest `AppT` VarT t) (ConT extractedConName) tyArgs
-    return $
-        InstanceD
-            Nothing
-            []
-            (ConT (lensClassName lensName) `AppT` sourceTy `AppT` fieldType)
-            [ FunD
-                lensName
-                [Clause [] (NormalB (VarE 'position `AppTypeE` LitT (NumTyLit $ fromIntegral fieldIdx + 1))) []]
-            ]
+        baseInstance =
+            InstanceD
+                Nothing
+                []
+                (ConT (lensClassName lensName) `AppT` sourceTy `AppT` fieldType)
+                [ FunD
+                    lensName
+                    [Clause [] (NormalB (VarE 'position `AppTypeE` LitT (NumTyLit $ fromIntegral fieldIdx + 1))) []]
+                ]
+
+    -- constInstance <-
+    --     instanceD
+    --         (return [])
+    --         (return (ConT (lensClassName lensName) `AppT` (ConT ''Const `AppT` sourceTy `AppT` VarT (mkName "a")) `AppT` fieldType))
+    --         [ funD
+    --             lensName
+    --             [clause [] (normalB [|lens ((^. $(varE lensName)) . getConst) (\(Const st) x -> Const (set $(varE lensName) x st))|]) []]
+    --         ]
+    return [baseInstance]
 
 mkExtractedConsLensClass :: Name -> DecQ
 mkExtractedConsLensClass lensName =

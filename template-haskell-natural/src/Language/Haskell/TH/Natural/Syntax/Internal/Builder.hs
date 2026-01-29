@@ -1,5 +1,7 @@
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Language.Haskell.TH.Natural.Syntax.Internal.Builder (
     -- * Main Builders
@@ -13,11 +15,11 @@ module Language.Haskell.TH.Natural.Syntax.Internal.Builder (
     -- * Base Builder
     BaseBuilder (..),
     runBaseBuilder,
-    (>>=),
-
-    -- * Const Builder
-    BaseConstBuilder (..),
     runBaseConstBuilder,
+    (>>=),
+    
+    -- * Const
+    zoomConst
 ) where
 
 import Control.Monad.State
@@ -30,7 +32,7 @@ import qualified Prelude
 -- | A computation that builds an object, the state, whose definition is parameterised by the _step_ of the computation
 --
 -- Basically a graded state monad
-newtype BaseBuilder s (prev :: BuilderStep) (next :: BuilderStep) m a
+newtype BaseBuilder s (prev :: k) next m a
     = MkB {unB :: s prev -> m (s next, a)}
     deriving (Functor)
 
@@ -54,8 +56,12 @@ instance MonadTrans (BaseBuilder s step step) where
     lift m = MkB $ \s -> (s,) <$> m
 
 {-# INLINE runBaseBuilder #-}
-runBaseBuilder :: Builder s step Ready () -> s step -> TH.Q (s Ready)
+runBaseBuilder :: Builder s step end () -> s step -> TH.Q (s end)
 runBaseBuilder (MkB f) s = fmap fst (f s)
+
+{-# INLINE runBaseConstBuilder #-}
+runBaseConstBuilder :: ConstBuilder s () -> s  -> TH.Q s
+runBaseConstBuilder builder s = getConst <$> runBaseBuilder builder (Const s)
 
 {-# INLINE (>>=) #-}
 (>>=) :: Builder s prev curr a -> (a -> Builder s curr next b) -> Builder s prev next b
@@ -65,30 +71,15 @@ runBaseBuilder (MkB f) s = fmap fst (f s)
     return (s2, b)
 
 -- | Common type for anything that builds a TH AST.
-type Builder s (prev :: BuilderStep) (next :: BuilderStep) a = BaseBuilder s prev next TH.Q a
+type Builder s (prev) (next) a = BaseBuilder s prev next TH.Q a
 
--- | A less general 'BaseBuilder' where the state is not parameterised by the step
-newtype BaseConstBuilder s m a = MkCB {unCB :: BaseBuilder (Const s) Ready Ready m a} deriving (Functor)
+-- | Similar to 'Builder', but the state is always 'Ready' 
+type ConstBuilder s a = BaseBuilder (Const s) Ready Ready TH.Q a
 
-instance (Monad m) => Applicative (BaseConstBuilder s m) where
-    pure a = MkCB $ pure a
-    liftA2 pair (MkCB f1) (MkCB f2) = MkCB $ liftA2 pair f1 f2
-
-instance (Monad m) => Monad (BaseConstBuilder s m) where
-    (>>=) (MkCB f1) f2 = MkCB $ f1 Prelude.>>= (unCB . f2)
-
-instance (Monad m) => MonadState s (BaseConstBuilder s m) where
-    state f = MkCB $ MkB $ \(Const s) -> let (a, s') = f s in pure (Const s', a)
-
-instance MonadTrans (BaseConstBuilder s) where
-    lift m = MkCB $ lift m
-
-{-# INLINE runBaseConstBuilder #-}
-runBaseConstBuilder :: ConstBuilder s () -> s -> TH.Q s
-runBaseConstBuilder (MkCB f) s = getConst <$> runBaseBuilder f (Const s)
-
--- | Common type for anything that builds a TH AST.
-type ConstBuilder s a = BaseConstBuilder s TH.Q a
+zoomConst :: Monad m => StateT s m a -> BaseBuilder (Const s) step step m a
+zoomConst m = MkB $ \(Const s) -> do 
+    (a, s') <-runStateT  m s
+    return (Const s', a)
 
 -- | Describes the current state of the builder
 data BuilderStep

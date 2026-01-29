@@ -13,13 +13,13 @@ main = return ()
 -- Could: nice to have a quasi quoter for functional deps
 
 mkToJSONClass :: ClassDefinition
-mkToJSONClass = do
+mkToJSONClass = newClass 'ToJSON $ do
     a <- bindTypeVar
-    newClass 'ToJSON [a] $ do
-        addToContext [t|ToJSON a|]
-        -- addFunDep ([a], [b]) (b does not exist, but it's an example)
-        classBody $ do
-            addSignature [|toJSON :: $(varT a) -> Maybe ByteString|]
+    addTyVar a
+    addToContext [t|ToJSON a|]
+    -- addFunDep ([a], [b]) (b does not exist, but it's an example)
+    classBody $ do
+        addSignature [|toJSON :: $(varT a) -> Maybe ByteString|]
 
 -- Defining Instance
 

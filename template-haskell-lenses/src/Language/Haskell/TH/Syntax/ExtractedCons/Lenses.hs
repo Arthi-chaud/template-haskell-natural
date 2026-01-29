@@ -2,7 +2,9 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 
 module Language.Haskell.TH.Syntax.ExtractedCons.Lenses where
@@ -10,6 +12,7 @@ module Language.Haskell.TH.Syntax.ExtractedCons.Lenses where
 import Language.Haskell.TH.Syntax (Clause, Match)
 import Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons hiding (Clause, Match)
 import Language.Haskell.TH.Syntax.ExtractedCons.Internal
+import Prelude hiding (exp)
 
 -- TODO For each extracted cons, for each field, generate lens using position
 
