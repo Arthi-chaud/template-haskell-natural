@@ -72,6 +72,9 @@ type Builder s prev next a = BaseBuilder s prev next TH.Q a
 -- | Similar to 'Builder', but the state is always 'Ready'
 type ConstBuilder s a = BaseBuilder s () () TH.Q a
 
+instance (MonadFail m) => MonadFail (BaseBuilder s step step m) where
+    fail s = MkB $ fail s
+
 instance (Monad m) => MonadState s (BaseBuilder s step step m) where
     state f = MkB $ state f
 

@@ -24,3 +24,4 @@ extractConstructorsOf ''Dec defaultOptions{deriveClasses = [''Generic, ''Eq, ''S
 extractConstructorsOf ''Foreign defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show]}
 extractConstructorsOf ''Pragma defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show]}
 extractConstructorsOf ''DerivClause defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show], newDataName = const "DeriveClause", newConName = const "DeriveClause"}
+extractConstructorsOf ''Info defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show]}
