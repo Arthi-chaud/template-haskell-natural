@@ -14,20 +14,20 @@ module Language.Haskell.TH.Natural.Syntax.Internal.Builder (
     (>>),
 
     -- * Steps
-    BuilderStep(..),
+    BuilderStep (..),
 
     -- * Unsafe
-   unsafeWithState ,
-   unsafeCastStep,
+    unsafeWithState,
+    unsafeCastStep,
 ) where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import qualified Language.Haskell.TH as TH
-import Prelude hiding ((>>=), (>>))
+import Prelude hiding ((>>), (>>=))
 import qualified Prelude
-import Control.Monad.Reader
 
--- | A computation that builds an object, the state 
+-- | A computation that builds an object, the state
 --
 -- A graded state monad
 newtype BaseBuilder s (prev :: k) (next :: k) m a
@@ -41,38 +41,38 @@ instance (Monad m) => Applicative (BaseBuilder s step step m) where
         pair a <$> f2
 
 instance (Monad m) => Monad (BaseBuilder s step step m) where
-    (>>=) (MkB f1) f2 = MkB $  Prelude.do
+    (>>=) (MkB f1) f2 = MkB $ Prelude.do
         a <- f1
         unB (f2 a)
 
 instance MonadTrans (BaseBuilder s step step) where
     lift m = MkB $ lift m
 
-instance Monad m => MonadReader s (BaseBuilder s step step m) where
-    ask = MkB  get
+instance (Monad m) => MonadReader s (BaseBuilder s step step m) where
+    ask = MkB get
     local f m = MkB (modify f) Prelude.>> m
 
 {-# INLINE runBaseBuilder #-}
 runBaseBuilder :: Builder s step end () -> s -> TH.Q s
-runBaseBuilder (MkB f)  = execStateT f
+runBaseBuilder (MkB f) = execStateT f
 
 {-# INLINE (>>=) #-}
 (>>=) :: Builder s prev curr a -> (a -> Builder s curr next b) -> Builder s prev next b
-(>>=) (MkB f1) f2 = MkB $  Prelude.do
-        a <- f1
-        unB (f2 a)
+(>>=) (MkB f1) f2 = MkB $ Prelude.do
+    a <- f1
+    unB (f2 a)
 
 {-# INLINE (>>) #-}
-(>>) :: Builder s prev curr a ->  Builder s curr next b -> Builder s prev next b
+(>>) :: Builder s prev curr a -> Builder s curr next b -> Builder s prev next b
 (>>) f1 f2 = f1 >>= const f2
 
 -- | Common type for anything that builds a TH AST.
-type Builder s (prev) (next) a = BaseBuilder s prev next TH.Q a
+type Builder s prev next a = BaseBuilder s prev next TH.Q a
 
--- | Similar to 'Builder', but the state is always 'Ready' 
+-- | Similar to 'Builder', but the state is always 'Ready'
 type ConstBuilder s a = BaseBuilder s () () TH.Q a
 
-instance Monad m => MonadState s (BaseBuilder s () () m) where
+instance (Monad m) => MonadState s (BaseBuilder s step step m) where
     state f = MkB $ state f
 
 liftQ :: TH.Q a -> BaseBuilder s step step TH.Q a
@@ -84,7 +84,7 @@ liftQ = MkB . lift
 unsafeWithState :: StateT s m a -> BaseBuilder s prev curr m a
 unsafeWithState = MkB
 
-unsafeCastStep :: forall prev' curr'  prev curr m s a. BaseBuilder s prev curr m a -> BaseBuilder s prev' curr' m a
+unsafeCastStep :: forall prev' curr' prev curr m s a. BaseBuilder s prev curr m a -> BaseBuilder s prev' curr' m a
 unsafeCastStep (MkB m) = MkB m
 
 data BuilderStep = Empty | Ready deriving (Eq, Show)
