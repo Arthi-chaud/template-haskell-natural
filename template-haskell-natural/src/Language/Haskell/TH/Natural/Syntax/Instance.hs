@@ -11,7 +11,6 @@ module Language.Haskell.TH.Natural.Syntax.Instance (
 ) where
 
 import Control.Lens
-import Control.Monad.State
 import Language.Haskell.TH (Q)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Internal

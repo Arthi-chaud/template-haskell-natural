@@ -20,8 +20,6 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Simple (
 
     -- * State
     SimpleExprBuilderState (..),
-    LetBinding (..),
-    Deconstruct (..),
 ) where
 
 import Control.Lens (makeLenses, view, views, (.=), (?=), (^.), (|>=))
@@ -35,15 +33,13 @@ import Language.Haskell.TH.Natural.Class (gen)
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Common
 import Language.Haskell.TH.Natural.Syntax.Internal hiding ((>>=))
-import Language.Haskell.TH.Natural.Syntax.Internal.Utils (conFieldCount)
-import Text.Printf
 import Prelude hiding ((>>=))
 
 type SimpleExprDefinition = TH.Q TH.Exp
 
 data SimpleExprBuilderState = MkEBS
     { _argNames :: [TH.Name]
-    , _lets :: [LetBinding]
+    , _lets :: [Binding]
     , _deconstructs :: [Deconstruct]
     , _returnedExp :: Maybe TH.Exp
     }
@@ -59,42 +55,27 @@ arg = do
     argNames |>= nextArgName
     return $ TH.VarE nextArgName
 
--- TODO Strict bind + fields
-
 instance ExprBuilder SimpleExprBuilder where
     type Definition SimpleExprBuilder = SimpleExprDefinition
     returns q = unsafeCastStep $ do
         expr <- liftB $ gen q
         returnedExp ?= expr
 
-    addLet l = impure $ lets |>= l
-
-    letCount = views lets length
-
-    getField conName idx qExpr = unsafeCastStep $ do
-        expr <- liftB $ gen qExpr
+    withDeconstruct expr f = impure $ do
         decons <- view deconstructs
         case partition ((== expr) . _src) decons of
             (_, []) -> do
-                patVarName <- liftB $ TH.newName "pat"
-                fieldCount <- liftB $ conFieldCount conName
-                let newDecons = MkDec conName [(idx, patVarName)] expr fieldCount
-                deconstructs |>= newDecons
-                return $ TH.VarE patVarName
-            (decons', (MkDec conN fieldVarNames _ totalFieldCount) : decons'') -> do
-                when (conN /= conName) $
-                    fail $
-                        printf "The following expression has already been deconstructed with the %s constructor: %s" (show conN) (show expr)
-                when (isJust $ lookup idx fieldVarNames) $
-                    fail $
-                        printf "When deconstructing the following expression, the field at index %d in constructor %s has already been bound: %s" idx (show conName) (show expr)
-                when (idx >= totalFieldCount) $
-                    fail $
-                        printf "When deconstructing the following expression, the constructor %s has %d fields. Index %d is out of bounds." (show conName) totalFieldCount idx
-                patVarName <- liftB $ TH.newName "pat"
-                let newDecons = MkDec conName ((idx, patVarName) : fieldVarNames) expr totalFieldCount
-                deconstructs .= (decons' ++ [newDecons] ++ decons'')
-                return $ TH.VarE patVarName
+                (varName, decon) <- f Nothing
+                deconstructs |>= decon
+                return varName
+            (prev, decon : rest) -> do
+                (varName, decon') <- f $ Just decon
+                deconstructs .= prev ++ [decon'] ++ rest
+                return varName
+
+    addLet l = impure $ lets |>= l
+
+    letCount = views lets length
 
     runExprBuilder b = do
         st <- runBaseBuilder b (MkEBS [] [] [] Nothing)
@@ -104,9 +85,6 @@ instance ExprBuilder SimpleExprBuilder where
         resExp <- case st ^. returnedExp of
             Nothing -> fail "Missing returned expression"
             Just e -> return e
-        let binds = st ^. lets <&> \(MkLet n expr s) -> TH.ValD ((if s then TH.BangP else id) $ TH.VarP n) (TH.NormalB expr) []
-            decons = st ^. deconstructs <&> mkDeconPat
+        let binds = st ^. lets <&> bindingToDec
+            decons = st ^. deconstructs <&> deconstructToDec
         return $ lamOrId $ TH.LetE (binds ++ decons) resExp
-      where
-        mkDeconPat (MkDec cName fields src count) =
-            TH.ValD (TH.ConP cName [] ([0 .. count] <&> \i -> maybe TH.WildP TH.VarP (lookup i fields))) (TH.NormalB src) []
