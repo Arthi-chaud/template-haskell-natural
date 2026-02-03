@@ -37,5 +37,5 @@ unsetOverlap = overlap .= (Nothing :: Maybe TH.Overlap)
 -- | Add an type argument to the instance
 addInstanceArg :: TH.Q TH.Type -> InstanceBuilder ()
 addInstanceArg qty = do
-    ty' <- lift qty
+    ty' <- liftB qty
     unsafeWithState $ ty %= (`TH.AppT` ty')

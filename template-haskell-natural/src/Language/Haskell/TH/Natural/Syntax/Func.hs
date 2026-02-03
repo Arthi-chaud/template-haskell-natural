@@ -45,7 +45,7 @@ type FuncBuilder a = ConstBuilder FuncBuilderState a
 
 setSignature :: (THBuilder a TH.Type) => a -> FuncBuilder ()
 setSignature sigBuilder = do
-    sig <- lift $ gen sigBuilder
+    sig <- liftB $ gen sigBuilder
     fName <- view (dec . name)
     signature ?= MkSigD fName sig
     return ()
@@ -64,7 +64,7 @@ addClause c = (dec . clauses) |>= c
 -- Warning: This operation is destructive, and replaces all previous clauses set using 'addClause'
 bodyFromExp :: Q TH.Exp -> FuncBuilder ()
 bodyFromExp qe = do
-    e <- lift qe
+    e <- liftB qe
     (dec . clauses) .= [TH.Clause [] (TH.NormalB e) []]
 
 -- | Add an inline pragma to the function

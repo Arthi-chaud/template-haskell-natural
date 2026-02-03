@@ -16,7 +16,6 @@ module Language.Haskell.TH.Natural.Syntax.Class (
 ) where
 
 import Control.Lens
-import Control.Monad.State
 import Data.Coerce (coerce)
 import Language.Haskell.TH hiding (cxt, funDep)
 import qualified Language.Haskell.TH as TH
@@ -49,5 +48,5 @@ addFunDep l r = funDep |>= FunDep (fmap coerce l) (fmap coerce r)
 -- | Add a function signature to the class
 addSignature :: (THBuilder a TH.Type) => String -> a -> ClassBuilder ()
 addSignature fName tyBuilder = do
-    sigTy <- lift $ gen tyBuilder
+    sigTy <- liftB $ gen tyBuilder
     addBody $ pure $ TH.SigD (mkName fName) sigTy

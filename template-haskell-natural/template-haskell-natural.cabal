@@ -13,7 +13,10 @@ library
       Language.Haskell.TH.Natural.Class
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common
-      Language.Haskell.TH.Natural.Syntax.Expr
+      Language.Haskell.TH.Natural.Syntax.Expr.Class
+      Language.Haskell.TH.Natural.Syntax.Expr.Common
+      Language.Haskell.TH.Natural.Syntax.Expr.Do
+      Language.Haskell.TH.Natural.Syntax.Expr.Simple
       Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance
       Language.Haskell.TH.Natural.Syntax.Internal

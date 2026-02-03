@@ -24,7 +24,6 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
 
 import Control.Lens ((?=), (|>=))
 import Control.Lens.TH
-import Control.Monad.State (MonadTrans (lift))
 import Data.Coerce
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
@@ -64,7 +63,7 @@ addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (coerce tyVar) TH
 -- | Add the given type to the set of constraints
 addConstraint :: (THBuilder a TH.Type) => a -> SignatureBuilder step step ()
 addConstraint tyBuilder = do
-    constr <- lift $ gen tyBuilder
+    constr <- liftB $ gen tyBuilder
     unsafeWithState $
         constraints |>= constr
 
@@ -73,12 +72,12 @@ addConstraint tyBuilder = do
 -- (n being the number of time 'addParam' was called)
 addParam :: (THBuilder a TH.Type) => a -> SignatureBuilder step step ()
 addParam tyBuilder = do
-    param <- liftQ $ gen tyBuilder
+    param <- liftB $ gen tyBuilder
     unsafeWithState $
         params |>= param
 
 -- | Set the result type in the function's signature
 setResultType :: (THBuilder a TH.Type) => a -> SignatureBuilder step Ready ()
 setResultType tyBuilder = B.do
-    resTy <- liftQ $ gen tyBuilder
+    resTy <- liftB $ gen tyBuilder
     unsafeWithState $ result ?= resTy
