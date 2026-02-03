@@ -10,6 +10,7 @@ module Language.Haskell.TH.Natural.Syntax.Internal.Builder (
     -- * Base Builder
     BaseBuilder (..),
     runBaseBuilder,
+    runBaseBuilder',
     (>>=),
     (>>),
 
@@ -56,6 +57,10 @@ instance (Monad m) => MonadReader s (BaseBuilder m s step step) where
 {-# INLINE runBaseBuilder #-}
 runBaseBuilder :: (Monad m) => BaseBuilder m s step end () -> s -> m s
 runBaseBuilder (MkB f) = execStateT f
+
+{-# INLINE runBaseBuilder' #-}
+runBaseBuilder' :: BaseBuilder m s step end a -> s -> m (a, s)
+runBaseBuilder' (MkB f) = runStateT f
 
 {-# INLINE (>>=) #-}
 (>>=) :: (Monad m) => BaseBuilder m s prev curr a -> (a -> BaseBuilder m s curr next b) -> BaseBuilder m s prev next b

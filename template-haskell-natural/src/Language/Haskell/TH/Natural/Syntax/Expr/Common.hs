@@ -1,4 +1,12 @@
-module Language.Haskell.TH.Natural.Syntax.Expr.Common where
+module Language.Haskell.TH.Natural.Syntax.Expr.Common (
+    -- * Binding (Let, do bind)
+    Binding (..),
+    bindingToDec,
+
+    -- * Deconstruction
+    Deconstruct (..),
+    deconstructToDec,
+) where
 
 import Control.Lens
 import qualified Language.Haskell.TH as TH

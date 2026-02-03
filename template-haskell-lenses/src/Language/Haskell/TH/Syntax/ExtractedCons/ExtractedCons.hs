@@ -8,8 +8,8 @@ import GHC.Generics
 import Language.Haskell.TH.Syntax
 import qualified Language.Haskell.TH.Syntax as TH
 
+extractConstructorsOf ''Match defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show], newDataName = const "PMatch"}
 extractConstructorsOf ''Exp defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show]}
-type Match = TH.Match
 type Clause = TH.Clause
 extractConstructorsOf ''Body defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show]}
 extractConstructorsOf ''Guard defaultOptions{deriveClasses = [''Generic, ''Eq, ''Show]}

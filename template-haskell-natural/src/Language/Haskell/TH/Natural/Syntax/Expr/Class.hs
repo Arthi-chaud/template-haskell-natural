@@ -1,7 +1,17 @@
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Language.Haskell.TH.Natural.Syntax.Expr.Class where
+module Language.Haskell.TH.Natural.Syntax.Expr.Class (
+    ExprBuilder (..),
+
+    -- * Let
+    strictLetBind,
+    letBind,
+    letBind_,
+
+    -- * Deconstruction
+    getField,
+) where
 
 import Control.Monad
 import Data.Kind

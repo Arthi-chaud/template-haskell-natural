@@ -7,6 +7,9 @@ import Language.Haskell.TH
 class THBuilder a b where
     gen :: a -> Q b
 
+instance THBuilder a a where
+    gen = pure
+
 instance THBuilder (Q a) a where
     gen = id
 
