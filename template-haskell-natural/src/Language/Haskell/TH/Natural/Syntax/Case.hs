@@ -32,27 +32,27 @@ module Language.Haskell.TH.Natural.Syntax.Case (
 import Control.Lens hiding (Empty)
 import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Class hiding (q)
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
 import Language.Haskell.TH.Natural.Syntax.Internal.Utils (conFieldCount)
+import Language.Haskell.TH.QBuilder hiding (q)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (body)
 
 type CaseDefinition = TH.Q CaseE
 
 type CaseExprBuilder = ConstBuilder CaseE
 
-case_ :: (THBuilder b TH.Exp) => b -> CaseExprBuilder () -> CaseDefinition
+case_ :: (QBuilder b TH.Exp) => b -> CaseExprBuilder () -> CaseDefinition
 case_ q builder = do
     e <- gen q
     runBaseBuilder builder $ MkCaseE e []
 
-matchConst :: ((THBuilder b1 TH.Pat), THBuilder b2 TH.Exp) => b1 -> b2 -> CaseExprBuilder ()
+matchConst :: ((QBuilder b1 TH.Pat), QBuilder b2 TH.Exp) => b1 -> b2 -> CaseExprBuilder ()
 matchConst b1 b2 = do
     patt <- liftB $ gen b1
     e <- liftB $ gen b2
     matches |>= TH.Match patt (TH.NormalB e) []
 
-matchWild :: (THBuilder b TH.Exp) => b -> CaseExprBuilder ()
+matchWild :: (QBuilder b TH.Exp) => b -> CaseExprBuilder ()
 matchWild b = do
     e <- liftB $ gen b
     matches |>= TH.Match TH.WildP (TH.NormalB e) []
@@ -80,7 +80,7 @@ var = Var
 constructor :: TH.Name -> (Int -> PatternBuilder a) -> Pattern a
 constructor = NestedMatch
 
-constant :: (THBuilder b TH.Pat) => b -> Pattern ()
+constant :: (QBuilder b TH.Pat) => b -> Pattern ()
 constant = Constant . gen
 
 class ConPatternBuilder m where
@@ -111,7 +111,7 @@ instance ConPatternBuilder (ConMatchBuilder step step) where
 instance ConPatternBuilder PatternBuilder where
     setFieldPattern fidx patt = (pats . ix fidx) .= patt
 
-body :: (THBuilder b TH.Exp) => b -> ConMatchBuilder Empty Ready ()
+body :: (QBuilder b TH.Exp) => b -> ConMatchBuilder Empty Ready ()
 body q = impure $ do
     e <- liftB (gen q)
     matchBody ?= e

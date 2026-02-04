@@ -17,10 +17,10 @@ import Control.Monad
 import Data.Kind
 import Data.Maybe
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Common
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
 import Language.Haskell.TH.Natural.Syntax.Internal.Utils
+import Language.Haskell.TH.QBuilder
 import Text.Printf
 
 class ExprBuilder (m :: BuilderStep -> BuilderStep -> Type -> Type) where
@@ -31,16 +31,16 @@ class ExprBuilder (m :: BuilderStep -> BuilderStep -> Type -> Type) where
     addLet :: Binding -> m step Empty ()
     letCount :: m step step Int
 
-    returns :: (THBuilder b TH.Exp) => b -> m step Ready ()
+    returns :: (QBuilder b TH.Exp) => b -> m step Ready ()
     runExprBuilder :: m step Ready () -> Definition m
 
-strictLetBind :: (ExprBuilder m, THBuilder b TH.Exp, m ~ Builder s) => b -> m step Empty TH.Exp
+strictLetBind :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => b -> m step Empty TH.Exp
 strictLetBind = letBind_ True
 
-letBind :: (ExprBuilder m, THBuilder b TH.Exp, m ~ Builder s) => b -> m step Empty TH.Exp
+letBind :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => b -> m step Empty TH.Exp
 letBind = letBind_ False
 
-letBind_ :: (ExprBuilder m, THBuilder b TH.Exp, m ~ Builder s) => Bool -> b -> m step Empty TH.Exp
+letBind_ :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => Bool -> b -> m step Empty TH.Exp
 letBind_ strict b = unsafeCastStep $ do
     prevLetCount <- letCount
     bindName <- liftB $ TH.newName ("var" ++ show prevLetCount)
@@ -48,7 +48,7 @@ letBind_ strict b = unsafeCastStep $ do
     addLet $ MkBind bindName expr strict
     return $ TH.VarE bindName
 
-getField :: (ExprBuilder m, THBuilder b TH.Exp, m ~ Builder s) => TH.Name -> Int -> b -> m step Empty TH.Exp
+getField :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => TH.Name -> Int -> b -> m step Empty TH.Exp
 getField conName idx qExpr = unsafeCastStep $ do
     expr <- liftB $ gen qExpr
     withDeconstruct expr $ \case

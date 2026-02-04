@@ -19,9 +19,9 @@ import Control.Lens
 import Data.Coerce (coerce)
 import Language.Haskell.TH hiding (cxt, funDep)
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Class (THBuilder, gen)
 import Language.Haskell.TH.Natural.Syntax.Common
 import Language.Haskell.TH.Natural.Syntax.Internal
+import Language.Haskell.TH.QBuilder (QBuilder, gen)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName)
 
 type ClassDefinition = Q ClassD
@@ -46,7 +46,7 @@ addFunDep :: [TypeVarName] -> [TypeVarName] -> ClassBuilder ()
 addFunDep l r = funDep |>= FunDep (fmap coerce l) (fmap coerce r)
 
 -- | Add a function signature to the class
-addSignature :: (THBuilder a TH.Type) => String -> a -> ClassBuilder ()
+addSignature :: (QBuilder a TH.Type) => String -> a -> ClassBuilder ()
 addSignature fName tyBuilder = do
     sigTy <- liftB $ gen tyBuilder
     addBody $ pure $ TH.SigD (mkName fName) sigTy

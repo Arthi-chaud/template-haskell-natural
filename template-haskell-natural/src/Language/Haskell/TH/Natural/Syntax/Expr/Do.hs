@@ -20,10 +20,10 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do (
 
 import Control.Lens hiding (Empty)
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Class hiding (q)
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Common
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
+import Language.Haskell.TH.QBuilder hiding (q)
 import Language.Haskell.TH.Syntax (ModName (..), nameBase)
 import Language.Haskell.TH.Syntax.ExtractedCons
 
@@ -47,16 +47,16 @@ newQualifiedDo modN builder = do
 newDo :: DoExprBuilder step Ready () -> DoExprDefinition
 newDo = runExprBuilder
 
-stmt :: (THBuilder b TH.Exp) => b -> DoExprBuilder step Ready ()
+stmt :: (QBuilder b TH.Exp) => b -> DoExprBuilder step Ready ()
 stmt = returns
 
-strictBind :: (THBuilder b TH.Exp) => b -> DoExprBuilder step Empty TH.Exp
+strictBind :: (QBuilder b TH.Exp) => b -> DoExprBuilder step Empty TH.Exp
 strictBind = bind_ True
 
-bind :: (THBuilder b TH.Exp) => b -> DoExprBuilder step Empty TH.Exp
+bind :: (QBuilder b TH.Exp) => b -> DoExprBuilder step Empty TH.Exp
 bind = bind_ False
 
-bind_ :: (THBuilder b TH.Exp) => Bool -> b -> DoExprBuilder step Empty TH.Exp
+bind_ :: (QBuilder b TH.Exp) => Bool -> b -> DoExprBuilder step Empty TH.Exp
 bind_ s q = impure $ do
     stepCount <-
         views steps $

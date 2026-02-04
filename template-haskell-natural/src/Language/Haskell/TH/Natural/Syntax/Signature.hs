@@ -27,9 +27,9 @@ import Control.Lens.TH
 import Data.Coerce
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Class (THBuilder, gen)
 import Language.Haskell.TH.Natural.Syntax.Internal
 import qualified Language.Haskell.TH.Natural.Syntax.Internal.Builder as B
+import Language.Haskell.TH.QBuilder (QBuilder, gen)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline, tyVarBndr)
 
 type SignatureDefinition = Q ForallT
@@ -61,7 +61,7 @@ addToForall :: TypeVarName -> SignatureBuilder step step ()
 addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (coerce tyVar) TH.SpecifiedSpec
 
 -- | Add the given type to the set of constraints
-addConstraint :: (THBuilder a TH.Type) => a -> SignatureBuilder step step ()
+addConstraint :: (QBuilder a TH.Type) => a -> SignatureBuilder step step ()
 addConstraint tyBuilder = do
     constr <- liftB $ gen tyBuilder
     unsafeWithState $
@@ -70,14 +70,14 @@ addConstraint tyBuilder = do
 -- | Set the type as the nth parameter of the function's signature
 --
 -- (n being the number of time 'addParam' was called)
-addParam :: (THBuilder a TH.Type) => a -> SignatureBuilder step step ()
+addParam :: (QBuilder a TH.Type) => a -> SignatureBuilder step step ()
 addParam tyBuilder = do
     param <- liftB $ gen tyBuilder
     unsafeWithState $
         params |>= param
 
 -- | Set the result type in the function's signature
-setResultType :: (THBuilder a TH.Type) => a -> SignatureBuilder step Ready ()
+setResultType :: (QBuilder a TH.Type) => a -> SignatureBuilder step Ready ()
 setResultType tyBuilder = B.do
     resTy <- liftB $ gen tyBuilder
     unsafeWithState $ result ?= resTy

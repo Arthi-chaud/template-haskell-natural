@@ -10,7 +10,6 @@ build-type:     Simple
 
 library
   exposed-modules:
-      Language.Haskell.TH.Natural.Class
       Language.Haskell.TH.Natural.Syntax.Case
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common
@@ -25,6 +24,7 @@ library
       Language.Haskell.TH.Natural.Syntax.Internal.Name
       Language.Haskell.TH.Natural.Syntax.Internal.Utils
       Language.Haskell.TH.Natural.Syntax.Signature
+      Language.Haskell.TH.QBuilder
   other-modules:
       Paths_template_haskell_natural
   hs-source-dirs:

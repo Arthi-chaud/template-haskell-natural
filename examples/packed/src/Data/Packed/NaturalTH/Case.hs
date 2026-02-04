@@ -10,7 +10,7 @@ import Control.Monad
 import Data.Packed
 import Data.Packed.TH.Utils (getBranchesTyList, resolveAppliedType)
 import Language.Haskell.TH
-import Language.Haskell.TH.Natural.Class
+import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Natural.Syntax.Case
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Do
