@@ -19,9 +19,9 @@ import Control.Monad
 import Data.Kind
 import Data.Maybe
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Natural.Internal.Utils
+import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
-import Language.Haskell.TH.Natural.Syntax.Internal.Builder
-import Language.Haskell.TH.Natural.Syntax.Internal.Utils
 import Language.Haskell.TH.QBuilder
 import Text.Printf
 

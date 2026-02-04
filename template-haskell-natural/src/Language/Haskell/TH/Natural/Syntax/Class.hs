@@ -18,8 +18,9 @@ module Language.Haskell.TH.Natural.Syntax.Class (
 import Control.Lens
 import Language.Haskell.TH hiding (cxt, funDep)
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Natural.Internal.Name
+import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Common
-import Language.Haskell.TH.Natural.Syntax.Internal
 import Language.Haskell.TH.QBuilder (QBuilder, gen)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName)
 

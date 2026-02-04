@@ -28,10 +28,10 @@ module Language.Haskell.TH.Natural.Syntax.Case (
 ) where
 
 import Control.Lens hiding (Empty)
-import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
+import Data.Constructor.Extract
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Syntax.Internal.Builder
-import Language.Haskell.TH.Natural.Syntax.Internal.Utils (conFieldCount)
+import Language.Haskell.TH.Natural.Internal.Utils
+import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (body)
 

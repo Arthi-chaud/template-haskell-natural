@@ -1,7 +1,7 @@
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Language.Haskell.TH.Natural.Syntax.Internal.Builder (
+module Language.Haskell.TH.Natural.Syntax.Builder (
     -- * Main Builders
     Builder,
     ConstBuilder,

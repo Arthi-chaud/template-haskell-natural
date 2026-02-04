@@ -14,13 +14,16 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do (
     bind,
     strictBind,
     bind_,
+
+    -- * Reexport
+    module Language.Haskell.TH.Natural.Syntax.Expr.Class,
 ) where
 
 import Control.Lens hiding (Empty)
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
-import Language.Haskell.TH.Natural.Syntax.Internal.Builder
 import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax (ModName (..), nameBase)
 import Language.Haskell.TH.Syntax.ExtractedCons

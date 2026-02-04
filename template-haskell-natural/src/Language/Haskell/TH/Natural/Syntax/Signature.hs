@@ -29,9 +29,10 @@ import Control.Lens.TH
 import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Syntax.Internal
-import qualified Language.Haskell.TH.Natural.Syntax.Internal.Builder as B
-import Language.Haskell.TH.QBuilder (QBuilder, gen)
+import Language.Haskell.TH.Natural.Internal.Name
+import Language.Haskell.TH.Natural.Syntax.Builder
+import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
+import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline, tyVarBndr)
 
 type SignatureDefinition = Q ForallT
@@ -68,7 +69,7 @@ addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (tyVar ^. name) T
 -- | Add the given type to the set of constraints
 addConstraint :: (QBuilder a TH.Type) => a -> SignatureBuilder step step ()
 addConstraint tyBuilder = do
-    constr <- liftB $ gen tyBuilder
+    constr <- liftB (gen tyBuilder :: Q TH.Type)
     unsafeWithState $
         constraints |>= constr
 
@@ -77,7 +78,7 @@ addConstraint tyBuilder = do
 -- (n being the number of time 'addParam' was called)
 addParam :: (QBuilder a TH.Type) => a -> SignatureBuilder step step ()
 addParam tyBuilder = do
-    param <- liftB $ gen tyBuilder
+    param <- liftB (gen tyBuilder :: Q TH.Type)
     unsafeWithState $
         params |>= param
 

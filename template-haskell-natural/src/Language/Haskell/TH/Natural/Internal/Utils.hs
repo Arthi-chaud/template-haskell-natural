@@ -1,4 +1,4 @@
-module Language.Haskell.TH.Natural.Syntax.Internal.Utils (conFieldCount) where
+module Language.Haskell.TH.Natural.Internal.Utils (conFieldCount) where
 
 import Data.Constructor.Extract (ExtractedConstructor (toExtractedCon))
 import Data.List (find)

@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Language.Haskell.TH.QBuilder (QBuilder (..)) where
@@ -19,15 +20,8 @@ instance QBuilder a a where
 instance (Quote m, m ~ Q) => QBuilder (m a) a where
     gen = id
 
---
--- instance (ExtractedConstructor a Dec) => QBuilder (Q a) Dec where
---     gen = fmap fromExtractedCon
---
--- instance (ExtractedConstructor a Type) => QBuilder (Q a) Type where
---     gen = fmap fromExtractedCon
---
--- instance (ExtractedConstructor a Exp) => QBuilder (Q a) Exp where
---     gen = fmap fromExtractedCon
-
 instance (ExtractedConstructor a b) => QBuilder (Q a) b where
     gen = fmap fromExtractedCon
+
+instance (ExtractedConstructor a b) => QBuilder a b where
+    gen = pure . fromExtractedCon

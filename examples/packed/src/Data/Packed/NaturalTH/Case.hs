@@ -11,12 +11,12 @@ import Control.Monad
 import Data.Packed
 import Data.Packed.TH.Utils (getBranchesTyList, resolveAppliedType)
 import Language.Haskell.TH
+import Language.Haskell.TH.Natural.Syntax.Builder
+import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Case
 import Language.Haskell.TH.Natural.Syntax.Expr.Do
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import Language.Haskell.TH.Natural.Syntax.Func
-import Language.Haskell.TH.Natural.Syntax.Internal.Builder
-import qualified Language.Haskell.TH.Natural.Syntax.Internal.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Signature
 import Language.Haskell.TH.Quotable
 
@@ -33,13 +33,14 @@ genCase tyName = do
     caseSignature = B.do
         (sourceType, _) <- liftB $ resolveAppliedType tyName
         branchesTypes <- liftB $ getBranchesTyList tyName []
-        let r = q (newTypeVar "r")
-            b = q (newTypeVar "b")
+        r <- qCon <$> liftB (newTypeVar "r")
+        b <- qCon <$> liftB (newTypeVar "b")
         forM_ branchesTypes $ \branchType -> B.do
             addParam $
                 let branchTypeList = q $ foldr (\a rest -> ConT '(:) `AppT` a `AppT` rest) (ConT '[]) branchType
                  in [t|PackedReader $branchTypeList $r $b|]
         setResultType [t|PackedReader '[$(q sourceType)] $r $b|]
+    caseBody :: [Exp] -> SimpleExprBuilder Empty Ready ()
     caseBody caseReaders = B.do
         packed <- q <$> arg
         l <- q <$> arg

@@ -2,7 +2,7 @@ module Language.Haskell.TH.Natural.Syntax.Common (addContext, addBody, addBody')
 
 import Control.Lens
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Syntax.Internal.Builder (Builder, liftB)
+import Language.Haskell.TH.Natural.Syntax.Builder (Builder, liftB)
 import Language.Haskell.TH.Syntax.ExtractedCons
 
 -- | Add a constraint to a context

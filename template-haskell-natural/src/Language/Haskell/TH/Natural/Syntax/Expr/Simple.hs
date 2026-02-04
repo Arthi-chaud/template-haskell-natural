@@ -26,9 +26,9 @@ import Data.Functor ((<&>))
 import Data.List (partition)
 import Data.Maybe
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Natural.Syntax.Builder hiding ((>>=))
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
-import Language.Haskell.TH.Natural.Syntax.Internal hiding ((>>=))
 import Language.Haskell.TH.QBuilder (gen)
 import Prelude hiding ((>>=))
 

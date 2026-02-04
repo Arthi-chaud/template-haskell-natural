@@ -16,7 +16,8 @@ module Language.Haskell.TH.Natural.Syntax.Instance (
 import Control.Lens
 import Language.Haskell.TH (Q)
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Syntax.Internal
+import Language.Haskell.TH.Natural.Internal.Name
+import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Syntax.ExtractedCons
 
 type InstanceDefinition = Q InstanceD
