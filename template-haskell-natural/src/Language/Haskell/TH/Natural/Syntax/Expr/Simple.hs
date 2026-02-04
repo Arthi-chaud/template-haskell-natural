@@ -5,21 +5,19 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Language.Haskell.TH.Natural.Syntax.Expr.Simple (
-    -- * Types
-    SimpleExprDefinition,
-
     -- * Builder
-    SimpleExprBuilder,
     newExpr,
-
-    -- * Operations
-    arg,
-    -- returns,
-    -- getField,
-    -- let_,
+    SimpleExprDefinition,
+    SimpleExprBuilder,
 
     -- * State
     SimpleExprBuilderState (..),
+
+    -- * Operations
+    arg,
+
+    -- * Reexport
+    module Language.Haskell.TH.Natural.Syntax.Expr.Class,
 ) where
 
 import Control.Lens (makeLenses, view, views, (.=), (?=), (^.), (|>=))

@@ -12,7 +12,6 @@ import Data.Packed
 import Data.Packed.TH.Utils (getBranchesTyList, resolveAppliedType)
 import Language.Haskell.TH
 import Language.Haskell.TH.Natural.Syntax.Case
-import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Do
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import Language.Haskell.TH.Natural.Syntax.Func
@@ -25,6 +24,7 @@ genCase :: Name -> DecsQ
 genCase tyName = do
     (TyConI (DataD _ _ _ _ cs _)) <- reify tyName
     newFunc ("case" ++ nameBase tyName) $ do
+        inline
         setSignature caseSignature
         bodyFromExp $ B.do
             args <- forM [0 .. length cs - 1] $ const arg

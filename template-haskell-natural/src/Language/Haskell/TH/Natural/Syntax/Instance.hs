@@ -1,13 +1,16 @@
 module Language.Haskell.TH.Natural.Syntax.Instance (
-    -- * Types
+    -- * Builder
+    newInstance,
     InstanceDefinition,
     InstanceBuilder,
 
     -- * Functions
-    newInstance,
     setOverlap,
     unsetOverlap,
     addInstanceArg,
+
+    -- * Re-export
+    newTypeVar,
 ) where
 
 import Control.Lens

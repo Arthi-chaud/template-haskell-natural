@@ -1,13 +1,11 @@
 {-# LANGUAGE GADTs #-}
 
 module Language.Haskell.TH.Natural.Syntax.Case (
-    -- * Case Expression
-
-    --- * Types
+    --- * Builder
+    case_,
     CaseDefinition,
     CaseExprBuilder,
     --- * Functions
-    case_,
     matchConst,
     matchWild,
     matchCon,

@@ -1,15 +1,18 @@
 {-# LANGUAGE RankNTypes #-}
 
 module Language.Haskell.TH.Natural.Syntax.Class (
-    -- * Types
+    -- * Builder
+    newClass,
     ClassDefinition,
     ClassBuilder,
 
     -- * Functions
-    newClass,
     addTypeVar,
     addFunDep,
     addSignature,
+
+    -- * Re-export
+    newTypeVar,
 ) where
 
 import Control.Lens

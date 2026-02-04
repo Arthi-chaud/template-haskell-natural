@@ -2,9 +2,10 @@
 
 -- | In Template Haskell, a signature ('SigD') refers to a symbol's type signature with a 'Name' (e.g. _length :: [a] -> Int_). Here, by _signature_, we mean just the type signature, without a name.
 module Language.Haskell.TH.Natural.Syntax.Signature (
-    -- * Types
-    SignatureDefinition,
+    -- * Builder
+    newSignature,
     SignatureBuilder,
+    SignatureDefinition,
 
     -- * State
     SignatureState (..),
@@ -14,12 +15,13 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
     result,
 
     -- * Functions
-    newSignature,
-    newTypeVar,
     addToForall,
     addConstraint,
     addParam,
     setResultType,
+
+    -- * Re-export
+    newTypeVar,
 ) where
 
 import Control.Lens ((?=), (^.), (|>=))

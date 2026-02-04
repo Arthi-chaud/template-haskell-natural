@@ -1,5 +1,6 @@
 module Language.Haskell.TH.Natural.Syntax.Func (
     -- * Builder
+    newFunc,
     FuncDefinition,
     FuncBuilder,
 
@@ -7,7 +8,7 @@ module Language.Haskell.TH.Natural.Syntax.Func (
     FuncBuilderState (..),
 
     -- * Functions
-    newFunc,
+
     --- * Clause
     addClause,
     bodyFromExp,

@@ -1,5 +1,7 @@
 module Language.Haskell.TH.Natural.Syntax.Expr.Do (
     -- * Types
+    newDo,
+    newQualifiedDo,
     DoExprDefinition,
     DoExprBuilder,
 
@@ -8,13 +10,9 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do (
     DoExprStep (..),
 
     -- * Functions
-    newDo,
-    newQualifiedDo,
     stmt,
     bind,
     strictBind,
-
-    -- * Internal
     bind_,
 ) where
 
