@@ -20,4 +20,4 @@ data Deconstruct = MkDec {_conName :: TH.Name, _fieldVarNames :: [(Int, TH.Name)
 
 deconstructToDec :: Deconstruct -> TH.Dec
 deconstructToDec (MkDec cName fields src count) =
-    TH.ValD (TH.ConP cName [] ([0 .. count] <&> \i -> maybe TH.WildP TH.VarP (lookup i fields))) (TH.NormalB src) []
+    TH.ValD (TH.ConP cName [] ([0 .. count - 1] <&> \i -> maybe TH.WildP TH.VarP (lookup i fields))) (TH.NormalB src) []

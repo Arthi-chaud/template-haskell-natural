@@ -10,7 +10,8 @@ build-type:     Simple
 
 library
   exposed-modules:
-      Lib
+      Data.Packed.NaturalTH
+      Data.Packed.NaturalTH.Case
   other-modules:
       Paths_packed_th_natural
   hs-source-dirs:
@@ -25,4 +26,30 @@ library
       base
     , packed-data
     , template-haskell
+    , template-haskell-lenses
+    , template-haskell-natural
+  default-language: Haskell2010
+
+test-suite unit
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      TreeSpec
+      Paths_packed_th_natural
+  hs-source-dirs:
+      test
+  default-extensions:
+      TemplateHaskell
+      RecordWildCards
+      MultiParamTypeClasses
+      LambdaCase
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base
+    , hspec
+    , packed-data
+    , packed-th-natural
+    , template-haskell
+    , template-haskell-lenses
+    , template-haskell-natural
   default-language: Haskell2010

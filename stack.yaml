@@ -6,5 +6,5 @@ packages:
   - examples/packed
 
 extra-deps:
-  - packed-data-0.2.0.0
+  - packed-data-0.1.0.3
   - linear-base-0.4.0

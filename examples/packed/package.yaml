@@ -11,6 +11,8 @@ dependencies:
   - base
   - packed-data
   - template-haskell
+  - template-haskell-natural
+  - template-haskell-lenses
 
 ghc-options:
   - -Wall
@@ -25,15 +27,15 @@ ghc-options:
 
 library:
   source-dirs: src
-#
-# tests:
-#   unit:
-#     main: Spec.hs
-#     source-dirs: test
-#     ghc-options:
-#       - -threaded
-#       - -rtsopts
-#       - -with-rtsopts=-N
-#     dependencies:
-#       - hspec
-#       - packed-th-natural
+
+tests:
+  unit:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - hspec
+      - packed-th-natural

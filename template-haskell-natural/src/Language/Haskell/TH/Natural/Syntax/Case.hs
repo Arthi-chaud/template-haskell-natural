@@ -60,7 +60,7 @@ matchWild b = do
 matchCon :: TH.Name -> ConMatchBuilder Empty Ready () -> CaseExprBuilder ()
 matchCon conName cmb = do
     fCount <- liftB $ conFieldCount conName
-    (MkMBS conP mexp) <- liftB $ runBaseBuilder cmb (MkMBS (MkConP conName [] (TH.WildP <$ [0 .. fCount])) Nothing)
+    (MkMBS conP mexp) <- liftB $ runBaseBuilder cmb (MkMBS (MkConP conName [] (TH.WildP <$ [0 .. fCount - 1])) Nothing)
     case mexp of
         Nothing -> fail "Match's Expression is missing"
         Just e -> matches |>= TH.Match (fromExtractedCon conP) (TH.NormalB e) []
@@ -95,7 +95,7 @@ field fidx = \case
     Constant qpat -> liftB qpat Prelude.>>= setFieldPattern fidx
     NestedMatch conN patBuilder -> do
         fCount <- liftB $ conFieldCount conN
-        (res, conP) <- liftB $ runBaseBuilder' (patBuilder fCount) (MkConP conN [] (TH.WildP <$ [0 .. fCount]))
+        (res, conP) <- liftB $ runBaseBuilder' (patBuilder fCount) (MkConP conN [] (TH.WildP <$ [0 .. fCount - 1]))
         setFieldPattern fidx $ fromExtractedCon conP
         return res
 

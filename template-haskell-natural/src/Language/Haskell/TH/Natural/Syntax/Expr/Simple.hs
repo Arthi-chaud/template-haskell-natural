@@ -9,8 +9,8 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Simple (
     SimpleExprDefinition,
 
     -- * Builder
-    ExprBuilder,
-    runExprBuilder,
+    SimpleExprBuilder,
+    newExpr,
 
     -- * Operations
     arg,
@@ -27,7 +27,6 @@ import Control.Monad
 import Data.Functor ((<&>))
 import Data.List (partition)
 import Data.Maybe
-import Language.Haskell.TH (mkName)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Class (gen)
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
@@ -48,10 +47,12 @@ makeLenses ''SimpleExprBuilderState
 
 type SimpleExprBuilder = Builder SimpleExprBuilderState
 
+newExpr :: SimpleExprBuilder step Ready () -> SimpleExprDefinition
+newExpr = runExprBuilder
+
 arg :: SimpleExprBuilder curr curr TH.Exp
 arg = do
-    prevArgCount <- views argNames length
-    let nextArgName = mkName $ 'a' : show (prevArgCount + 1)
+    nextArgName <- liftB $ TH.newName "arg"
     argNames |>= nextArgName
     return $ TH.VarE nextArgName
 
@@ -79,12 +80,15 @@ instance ExprBuilder SimpleExprBuilder where
 
     runExprBuilder b = do
         st <- runBaseBuilder b (MkEBS [] [] [] Nothing)
+        let binds = st ^. lets <&> bindingToDec
+            decons = st ^. deconstructs <&> deconstructToDec
         let lamOrId = case st ^. argNames of
                 [] -> id
                 names -> TH.LamE (TH.VarP <$> names)
+        let letOrId = case binds ++ decons of
+                [] -> id
+                exprs -> TH.LetE exprs
         resExp <- case st ^. returnedExp of
             Nothing -> fail "Missing returned expression"
             Just e -> return e
-        let binds = st ^. lets <&> bindingToDec
-            decons = st ^. deconstructs <&> deconstructToDec
-        return $ lamOrId $ TH.LetE (binds ++ decons) resExp
+        return $ lamOrId $ letOrId resExp

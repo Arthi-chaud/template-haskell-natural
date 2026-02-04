@@ -43,17 +43,17 @@ type FuncBuilder a = ConstBuilder FuncBuilderState a
 
 -- TODO Should not be ready if 0 clause
 
+newFunc :: String -> FuncBuilder () -> FuncDefinition
+newFunc fName builder = do
+    MkFBS{..} <- runBaseBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
+    return ((TH.PragmaD <$> _pragmas) ++ (fromExtractedCon <$> maybeToList _signature) ++ [fromExtractedCon _dec])
+
 setSignature :: (THBuilder a TH.Type) => a -> FuncBuilder ()
 setSignature sigBuilder = do
     sig <- liftB $ gen sigBuilder
     fName <- view (dec . name)
     signature ?= MkSigD fName sig
     return ()
-
-newFunc :: String -> FuncBuilder () -> FuncDefinition
-newFunc fName builder = do
-    MkFBS{..} <- runBaseBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
-    return (fromExtractedCon _dec : (fromExtractedCon <$> maybeToList _signature) ++ (TH.PragmaD <$> _pragmas))
 
 -- | Add a clause to the function
 addClause :: Clause -> FuncBuilder ()
@@ -62,9 +62,9 @@ addClause c = (dec . clauses) |>= c
 -- | Uses an Exp as the body of a function
 --
 -- Warning: This operation is destructive, and replaces all previous clauses set using 'addClause'
-bodyFromExp :: Q TH.Exp -> FuncBuilder ()
+bodyFromExp :: (THBuilder b TH.Exp) => b -> FuncBuilder ()
 bodyFromExp qe = do
-    e <- liftB qe
+    e <- liftB $ gen qe
     (dec . clauses) .= [TH.Clause [] (TH.NormalB e) []]
 
 -- | Add an inline pragma to the function

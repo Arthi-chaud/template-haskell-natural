@@ -51,4 +51,4 @@ tests:
       - -with-rtsopts=-N
     dependencies:
       - hspec
-      - natural-th
+      - template-haskell-natural
