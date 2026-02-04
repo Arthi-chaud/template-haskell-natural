@@ -1,0 +1,28 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.38.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           packed-th-natural
+version:        1.0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_packed_th_natural
+  hs-source-dirs:
+      src
+  default-extensions:
+      TemplateHaskell
+      RecordWildCards
+      MultiParamTypeClasses
+      LambdaCase
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base
+    , packed-data
+    , template-haskell
+  default-language: Haskell2010

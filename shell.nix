@@ -26,7 +26,7 @@ pkgs.mkShell {
   ++ (with pkgs; [
     fourmolu
     hlint
-    (haskell-language-server.override { supportedGhcVersions = [ "984" ]; })
+    (haskell-language-server.override { supportedGhcVersions = [ "9103" ]; })
   ]);
 
   NIX_PATH = "nixpkgs=" + pkgs.path;

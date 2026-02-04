@@ -10,7 +10,7 @@
 module Language.Haskell.TH.Syntax.ExtractedCons.Lenses where
 
 import Language.Haskell.TH.Syntax (Clause, Match)
-import Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons hiding (Clause, Match)
+import Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons hiding (Clause)
 import Language.Haskell.TH.Syntax.ExtractedCons.Internal
 import Prelude hiding (exp)
 
@@ -88,6 +88,9 @@ mkExtractedConsLenses ''ViewP ["exp", "pat"]
 #if MIN_VERSION_template_haskell(2,22,0)
 mkExtractedConsLenses ''TypeP ["ty"]
 mkExtractedConsLenses ''InvisP ["ty"]
+#endif
+
+#if MIN_VERSION_template_haskell(2,23,0)
 mkExtractedConsLenses ''OrP ["pats"]
 #endif
 

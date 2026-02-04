@@ -3,10 +3,24 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/topics/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: packed-data-0.2.0.0@sha256:053f28c6527b6ee90aa57b57d99e4a6d6166638cb10ec74b4f3ed0e2c9030755,8134
+    pantry-tree:
+      sha256: 9e57cbbdd86a7d19aafdc34d5cbdfdb6fbd979ccf9662514fcf3f3f3606c144a
+      size: 3998
+  original:
+    hackage: packed-data-0.2.0.0
+- completed:
+    hackage: linear-base-0.4.0@sha256:f7c0c832daa0cc97de121ffa34b6cfe72f7cf7f3ea7947d8f1ccac083c91c065,6841
+    pantry-tree:
+      sha256: 81d29114685e1022c33754c4ac39b405b3b575e67e80305bc4439b0da2dd9624
+      size: 9096
+  original:
+    hackage: linear-base-0.4.0
 snapshots:
 - completed:
-    sha256: 7e724f347d5969cb5e8dde9f9aae30996e3231c29d1dafd45f21f1700d4c4fcb
-    size: 684460
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/28.yaml
-  original: lts-23.28
+    sha256: b7dc388c75a62a8a2f1ac753f3bfc3f43a3a2cb58d8a920272cc9a049ff76c62
+    size: 726792
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/24/29.yaml
+  original: lts-24.29
