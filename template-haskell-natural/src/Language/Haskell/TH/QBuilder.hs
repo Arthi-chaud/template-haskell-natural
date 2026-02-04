@@ -1,8 +1,9 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
-module Language.Haskell.TH.QBuilder (QBuilder (..), q) where
+module Language.Haskell.TH.QBuilder (QBuilder (..)) where
 
+import Data.Constructor.Extract (ExtractedConstructor)
 import Data.Constructor.Extract.Class (ExtractedConstructor (fromExtractedCon))
 import Language.Haskell.TH
 
@@ -18,17 +19,15 @@ instance QBuilder a a where
 instance (Quote m, m ~ Q) => QBuilder (m a) a where
     gen = id
 
-instance (ExtractedConstructor a Dec) => QBuilder (Q a) Dec where
-    gen = fmap fromExtractedCon
-
-instance (ExtractedConstructor a Type) => QBuilder (Q a) Type where
-    gen = fmap fromExtractedCon
-
-instance (ExtractedConstructor a Exp) => QBuilder (Q a) Exp where
-    gen = fmap fromExtractedCon
-
--- istance (ExtractedConstructor a b) => QBuilder (Q a) b where
+--
+-- instance (ExtractedConstructor a Dec) => QBuilder (Q a) Dec where
+--     gen = fmap fromExtractedCon
+--
+-- instance (ExtractedConstructor a Type) => QBuilder (Q a) Type where
+--     gen = fmap fromExtractedCon
+--
+-- instance (ExtractedConstructor a Exp) => QBuilder (Q a) Exp where
 --     gen = fmap fromExtractedCon
 
-q :: a -> Q a -- TODO Move me
-q = return
+instance (ExtractedConstructor a b) => QBuilder (Q a) b where
+    gen = fmap fromExtractedCon

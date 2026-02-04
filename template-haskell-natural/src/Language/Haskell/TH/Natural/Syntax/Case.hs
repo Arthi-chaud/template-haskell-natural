@@ -34,7 +34,7 @@ import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
 import Language.Haskell.TH.Natural.Syntax.Internal.Utils (conFieldCount)
-import Language.Haskell.TH.QBuilder hiding (q)
+import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (body)
 
 type CaseDefinition = TH.Q CaseE

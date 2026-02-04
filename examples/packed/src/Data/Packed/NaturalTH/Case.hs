@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators #-}
@@ -18,7 +19,7 @@ import Language.Haskell.TH.Natural.Syntax.Func
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Internal.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Signature
-import Language.Haskell.TH.QBuilder
+import Language.Haskell.TH.Quotable
 
 genCase :: Name -> DecsQ
 genCase tyName = do
@@ -32,13 +33,13 @@ genCase tyName = do
     caseSignature = B.do
         (sourceType, _) <- liftB $ resolveAppliedType tyName
         branchesTypes <- liftB $ getBranchesTyList tyName []
-        r <- q . VarT <$> liftB (newName "r")
-        b <- q . VarT <$> liftB (newName "b")
+        let r = q (newTypeVar "r")
+            b = q (newTypeVar "b")
         forM_ branchesTypes $ \branchType -> B.do
             addParam $
                 let branchTypeList = q $ foldr (\a rest -> ConT '(:) `AppT` a `AppT` rest) (ConT '[]) branchType
                  in [t|PackedReader $branchTypeList $r $b|]
-        setResultType [t|PackedReader '[$(return sourceType)] $r $b|]
+        setResultType [t|PackedReader '[$(q sourceType)] $r $b|]
     caseBody caseReaders = B.do
         packed <- q <$> arg
         l <- q <$> arg

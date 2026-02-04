@@ -22,9 +22,8 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
     setResultType,
 ) where
 
-import Control.Lens ((?=), (|>=))
+import Control.Lens ((?=), (^.), (|>=))
 import Control.Lens.TH
-import Data.Coerce
 import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
@@ -62,7 +61,7 @@ newSignature builder = do
 --
 -- Using this function should comply with the 'forall-or-nothing' rule (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/explicit_forall.html#the-forall-or-nothing-rule)
 addToForall :: TypeVarName -> SignatureBuilder step step ()
-addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (coerce tyVar) TH.SpecifiedSpec
+addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (tyVar ^. name) TH.SpecifiedSpec
 
 -- | Add the given type to the set of constraints
 addConstraint :: (QBuilder a TH.Type) => a -> SignatureBuilder step step ()

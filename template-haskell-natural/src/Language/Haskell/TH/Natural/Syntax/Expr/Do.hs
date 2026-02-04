@@ -23,7 +23,7 @@ import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
-import Language.Haskell.TH.QBuilder hiding (q)
+import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax (ModName (..), nameBase)
 import Language.Haskell.TH.Syntax.ExtractedCons
 

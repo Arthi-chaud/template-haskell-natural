@@ -25,6 +25,7 @@ library
       Language.Haskell.TH.Natural.Syntax.Internal.Utils
       Language.Haskell.TH.Natural.Syntax.Signature
       Language.Haskell.TH.QBuilder
+      Language.Haskell.TH.Quotable
   other-modules:
       Paths_template_haskell_natural
   hs-source-dirs:

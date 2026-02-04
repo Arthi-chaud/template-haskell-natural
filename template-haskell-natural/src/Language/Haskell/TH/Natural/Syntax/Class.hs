@@ -5,9 +5,6 @@ module Language.Haskell.TH.Natural.Syntax.Class (
     ClassDefinition,
     ClassBuilder,
 
-    -- * Variable binding
-    newTypeVar,
-
     -- * Functions
     newClass,
     addTypeVar,
@@ -16,7 +13,6 @@ module Language.Haskell.TH.Natural.Syntax.Class (
 ) where
 
 import Control.Lens
-import Data.Coerce (coerce)
 import Language.Haskell.TH hiding (cxt, funDep)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Common
@@ -39,11 +35,11 @@ addTypeVar :: TypeVarName -> BndrVis -> Maybe TH.Kind -> ClassBuilder ()
 addTypeVar tyN vis mkind =
     tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
   where
-    n = coerce tyN
+    n = tyN ^. name
 
 -- | Add functional dependencies
 addFunDep :: [TypeVarName] -> [TypeVarName] -> ClassBuilder ()
-addFunDep l r = funDep |>= FunDep (fmap coerce l) (fmap coerce r)
+addFunDep l r = funDep |>= FunDep (fmap (^. name) l) (fmap (^. name) r)
 
 -- | Add a function signature to the class
 addSignature :: (QBuilder a TH.Type) => String -> a -> ClassBuilder ()
