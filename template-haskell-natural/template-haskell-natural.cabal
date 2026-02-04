@@ -14,8 +14,8 @@ library
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common
       Language.Haskell.TH.Natural.Syntax.Expr.Class
-      Language.Haskell.TH.Natural.Syntax.Expr.Common
       Language.Haskell.TH.Natural.Syntax.Expr.Do
+      Language.Haskell.TH.Natural.Syntax.Expr.Internal
       Language.Haskell.TH.Natural.Syntax.Expr.Simple
       Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance

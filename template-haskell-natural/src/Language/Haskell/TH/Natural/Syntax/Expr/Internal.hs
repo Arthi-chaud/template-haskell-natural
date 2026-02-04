@@ -1,4 +1,4 @@
-module Language.Haskell.TH.Natural.Syntax.Expr.Common (
+module Language.Haskell.TH.Natural.Syntax.Expr.Internal (
     -- * Binding (Let, do bind)
     Binding (..),
     bindingToDec,

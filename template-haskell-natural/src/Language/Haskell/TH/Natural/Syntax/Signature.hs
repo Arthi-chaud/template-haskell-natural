@@ -25,6 +25,7 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
 import Control.Lens ((?=), (|>=))
 import Control.Lens.TH
 import Data.Coerce
+import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Internal
@@ -45,7 +46,10 @@ data SignatureState = MkSBS
 
 makeLenses ''SignatureState
 
-newSignature :: SignatureBuilder Empty Ready () -> SignatureDefinition
+instance QBuilder (SignatureBuilder step Ready ()) TH.Type where
+    gen = fmap fromExtractedCon . newSignature
+
+newSignature :: SignatureBuilder step Ready () -> SignatureDefinition
 newSignature builder = do
     MkSBS{..} <- runBaseBuilder builder (MkSBS [] [] [] Nothing)
     resTy <- case _result of

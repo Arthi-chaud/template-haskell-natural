@@ -1,5 +1,7 @@
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Language.Haskell.TH.Natural.Syntax.Expr.Class (
     ExprBuilder (..),
@@ -17,7 +19,7 @@ import Control.Monad
 import Data.Kind
 import Data.Maybe
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Syntax.Expr.Common
+import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
 import Language.Haskell.TH.Natural.Syntax.Internal.Utils
 import Language.Haskell.TH.QBuilder
@@ -33,6 +35,9 @@ class ExprBuilder (m :: BuilderStep -> BuilderStep -> Type -> Type) where
 
     returns :: (QBuilder b TH.Exp) => b -> m step Ready ()
     runExprBuilder :: m step Ready () -> Definition m
+
+instance (ExprBuilder m, QBuilder (Definition m) TH.Exp) => QBuilder (m step Ready ()) TH.Exp where
+    gen = gen . runExprBuilder
 
 strictLetBind :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => b -> m step Empty TH.Exp
 strictLetBind = letBind_ True
