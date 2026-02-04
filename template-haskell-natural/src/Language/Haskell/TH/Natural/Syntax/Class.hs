@@ -22,7 +22,7 @@ import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Class (THBuilder, gen)
 import Language.Haskell.TH.Natural.Syntax.Common
 import Language.Haskell.TH.Natural.Syntax.Internal
-import Language.Haskell.TH.Syntax.ExtractedCons
+import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName)
 
 type ClassDefinition = Q ClassD
 

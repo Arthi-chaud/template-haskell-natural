@@ -32,7 +32,7 @@ module Language.Haskell.TH.Natural.Syntax.Case (
 import Control.Lens hiding (Empty)
 import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Class
+import Language.Haskell.TH.Natural.Class hiding (q)
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder
 import Language.Haskell.TH.Natural.Syntax.Internal.Utils (conFieldCount)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (body)

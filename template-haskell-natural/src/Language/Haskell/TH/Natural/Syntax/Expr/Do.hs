@@ -20,7 +20,7 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do (
 
 import Control.Lens hiding (Empty)
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Class
+import Language.Haskell.TH.Natural.Class hiding (q)
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Common
 import Language.Haskell.TH.Natural.Syntax.Internal.Builder

@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Data.Packed.NaturalTH.Case where
+module Data.Packed.NaturalTH.Case (genCase) where
 
 import Control.Applicative (liftA3)
 import Control.Monad

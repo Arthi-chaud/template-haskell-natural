@@ -1,3 +1,6 @@
+{-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+
 module Language.Haskell.TH.Natural.Class (THBuilder (..), q) where
 
 import Data.Constructor.Extract.Class (ExtractedConstructor (fromExtractedCon))
@@ -7,6 +10,8 @@ import Language.Haskell.TH
 class THBuilder a b where
     gen :: a -> Q b
 
+-- TODO Does not work when using quotes
+-- instance THBuilder (Q a) a where
 instance (Quote m, m ~ Q) => THBuilder (m a) a where
     gen = id
 

@@ -27,7 +27,7 @@ import Language.Haskell.TH (Q, mkName)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Class (THBuilder, gen)
 import Language.Haskell.TH.Natural.Syntax.Internal
-import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline)
+import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName, inline)
 
 type FuncDefinition = Q [TH.Dec]
 
