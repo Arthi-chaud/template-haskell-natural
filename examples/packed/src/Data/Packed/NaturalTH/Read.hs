@@ -5,6 +5,7 @@ module Data.Packed.NaturalTH.Read (genRead) where
 
 import Control.Monad
 import qualified Data.Packed as R
+import Data.Packed.NaturalTH.Case (caseFName)
 import qualified Data.Packed.Reader as R
 import Data.Packed.TH.Utils
 import qualified Language.Haskell.TH as TH
@@ -23,7 +24,7 @@ genRead tyName = newFunc ("read" ++ TH.nameBase tyName) $ B.do
     setSignature readSig
     bodyFromExp $ newExpr $ B.do
         (TH.TyConI (TH.DataD _ _ _ _ cs _)) <- liftB $ TH.reify tyName
-        returns $ apply (TH.VarE caseFName) (genReadLambda <$> cs)
+        returns $ apply (TH.VarE $ caseFName tyName) (genReadLambda <$> cs)
   where
     readSig = newSignature $ B.do
         (resolvedType, typeVariables) <- liftB $ resolveAppliedType tyName
@@ -31,7 +32,6 @@ genRead tyName = newFunc ("read" ++ TH.nameBase tyName) $ B.do
         forM_ typeVariables $ \tyVar ->
             addConstraint [t|R.Unpackable $(TH.varT tyVar)|]
         setResultType [t|R.PackedReader '[$(q resolvedType)] $(qCon r) $(q resolvedType)|]
-    caseFName = TH.mkName $ "case" ++ sanitizeConName tyName
 
 genReadLambda :: TH.Con -> SimpleExprDefinition
 genReadLambda con = B.do

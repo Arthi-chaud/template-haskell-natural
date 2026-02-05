@@ -5,14 +5,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Data.Packed.NaturalTH.Case (genCase) where
+module Data.Packed.NaturalTH.Case (genCase, caseFName) where
 
 import Control.Applicative (liftA3)
 import Control.Monad
 import Data.Packed
 import Data.Packed.Reader (runPackedReader)
 import Data.Packed.TH (Tag)
-import Data.Packed.TH.Utils (getBranchesTyList, resolveAppliedType)
+import Data.Packed.TH.Utils (getBranchesTyList, resolveAppliedType, sanitizeConName)
 import Language.Haskell.TH
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail)
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
@@ -23,10 +23,13 @@ import Language.Haskell.TH.Natural.Syntax.Func
 import Language.Haskell.TH.Natural.Syntax.Signature
 import Language.Haskell.TH.Quotable
 
+caseFName :: Name -> Name
+caseFName tyName = mkName $ "case" ++ sanitizeConName tyName
+
 genCase :: Name -> DecsQ
 genCase tyName = do
     (TyConI (DataD _ _ _ _ cs _)) <- reify tyName
-    newFunc ("case" ++ nameBase tyName) $ do
+    newFunc (nameBase $ caseFName tyName) $ do
         inline
         setSignature caseSignature
         bodyFromExp $ B.do
