@@ -12,6 +12,8 @@ library
   exposed-modules:
       Data.Packed.NaturalTH
       Data.Packed.NaturalTH.Case
+      Data.Packed.NaturalTH.Read
+      Data.Packed.NaturalTH.Unpackable
   other-modules:
       Paths_packed_th_natural
   hs-source-dirs:

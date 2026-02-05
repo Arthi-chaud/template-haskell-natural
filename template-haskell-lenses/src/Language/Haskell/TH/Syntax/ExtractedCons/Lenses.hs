@@ -155,7 +155,7 @@ mkExtractedConsLenses ''NewtypeD ["cxt", "name", "tyVarBndr", "kind", "con", "de
 mkExtractedConsLenses ''TypeDataD ["name", "tyVarBndr", "kind", "con"]
 mkExtractedConsLenses ''TySynD ["name", "tyVarBndr", "ty"]
 mkExtractedConsLenses ''ClassD ["cxt", "name", "tyVarBndr", "funDep", "decs"]
-mkExtractedConsLenses ''InstanceD ["overlap", "ctx", "ty", "decs"]
+mkExtractedConsLenses ''InstanceD ["overlap", "cxt", "ty", "decs"]
 mkExtractedConsLenses ''SigD ["name", "ty"]
 mkExtractedConsLenses ''KiSigD ["name", "kind"]
 mkExtractedConsLenses ''ForeignD ["foreign_"]

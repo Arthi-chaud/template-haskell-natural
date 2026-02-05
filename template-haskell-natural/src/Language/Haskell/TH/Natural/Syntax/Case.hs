@@ -32,6 +32,7 @@ import Data.Constructor.Extract
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Internal.Utils
 import Language.Haskell.TH.Natural.Syntax.Builder
+import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (body)
 
@@ -60,7 +61,7 @@ matchCon conName cmb = do
     fCount <- liftB $ conFieldCount conName
     (MkMBS conP mexp) <- liftB $ runBaseBuilder cmb (MkMBS (MkConP conName [] (TH.WildP <$ [0 .. fCount - 1])) Nothing)
     case mexp of
-        Nothing -> fail "Match's Expression is missing"
+        Nothing -> B.fail "Match's Expression is missing"
         Just e -> matches |>= TH.Match (fromExtractedCon conP) (TH.NormalB e) []
 
 --

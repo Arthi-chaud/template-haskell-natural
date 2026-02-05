@@ -18,7 +18,7 @@ addBody s = do
     decs |>= dec
 
 -- | Add many 'Dec's
-addBody' :: (HasDecs s [a]) => [TH.Q a] -> Builder s step step ()
+addBody' :: (HasDecs s [a]) => TH.Q [a] -> Builder s step step ()
 addBody' s = do
-    dec' <- liftB $ sequence s
+    dec' <- liftB s
     decs <>= dec'

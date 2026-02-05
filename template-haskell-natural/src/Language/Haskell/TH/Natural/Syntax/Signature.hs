@@ -55,7 +55,7 @@ newSignature :: SignatureBuilder step Ready () -> SignatureDefinition
 newSignature builder = do
     MkSBS{..} <- runBaseBuilder builder (MkSBS [] [] [] Nothing)
     resTy <- case _result of
-        Nothing -> fail "The signature does not contain a return type."
+        Nothing -> Prelude.fail "The signature does not contain a return type."
         Just r -> return r
     let funcType = foldr (\param -> ((ArrowT `AppT` param) `AppT`)) resTy _params
     return $ MkForallT _tyVarBndr _constraints funcType

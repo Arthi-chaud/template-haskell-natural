@@ -13,6 +13,7 @@ module Language.Haskell.TH.Natural.Syntax.Builder (
     runBaseBuilder',
     (>>=),
     (>>),
+    fail,
 
     -- * Steps
     BuilderStep (..),
@@ -29,7 +30,7 @@ import Control.Monad.Reader (MonadReader (..))
 import Control.Monad.State (MonadState (..), StateT (..), execStateT, modify)
 import qualified Control.Monad.State
 import qualified Language.Haskell.TH as TH
-import Prelude hiding ((>>), (>>=))
+import Prelude hiding (fail, (>>), (>>=))
 import qualified Prelude
 
 -- | A computation that builds an object, the state
@@ -72,6 +73,9 @@ runBaseBuilder' (MkB f) = runStateT f
 (>>) :: (Monad m) => BaseBuilder m s prev curr a -> BaseBuilder m s curr next b -> BaseBuilder m s prev next b
 (>>) f1 f2 = f1 >>= const f2
 
+fail :: (MonadFail m) => String -> BaseBuilder m s prev curr a
+fail s = MkB $ Prelude.fail s
+
 -- | Common type for anything that builds a TH AST.
 type Builder = BaseBuilder TH.Q
 
@@ -79,7 +83,7 @@ type Builder = BaseBuilder TH.Q
 type ConstBuilder s = BaseBuilder TH.Q s () ()
 
 instance (MonadFail m) => MonadFail (BaseBuilder m s step step) where
-    fail s = MkB $ fail s
+    fail s = MkB $ Prelude.fail s
 
 instance (Monad m) => MonadState s (BaseBuilder m s step step) where
     state f = MkB $ state f

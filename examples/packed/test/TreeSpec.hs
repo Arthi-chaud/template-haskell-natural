@@ -1,7 +1,10 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE IncoherentInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
-module TreeSpec (Spec) where
+module TreeSpec (spec) where
 
+import Data.Packed hiding (mkPacked)
 import Data.Packed.NaturalTH (mkPacked)
 import Test.Hspec
 

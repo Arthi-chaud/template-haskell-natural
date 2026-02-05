@@ -21,7 +21,7 @@ import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Common
-import Language.Haskell.TH.QBuilder (QBuilder, gen)
+import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName)
 
 type ClassDefinition = Q ClassD

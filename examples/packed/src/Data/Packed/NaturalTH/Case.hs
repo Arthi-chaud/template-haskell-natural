@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE QualifiedDo #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators #-}
 
@@ -9,9 +10,11 @@ module Data.Packed.NaturalTH.Case (genCase) where
 import Control.Applicative (liftA3)
 import Control.Monad
 import Data.Packed
+import Data.Packed.Reader (runPackedReader)
+import Data.Packed.TH (Tag)
 import Data.Packed.TH.Utils (getBranchesTyList, resolveAppliedType)
 import Language.Haskell.TH
-import Language.Haskell.TH.Natural.Syntax.Builder
+import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail)
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Case
 import Language.Haskell.TH.Natural.Syntax.Expr.Do
@@ -46,9 +49,14 @@ genCase tyName = do
         l <- q <$> arg
         returns $ newDo $ B.do
             -- NOTE: 'newDo' Can be removed, but leave it to show it's a do-expression
-            tpl <- bind [|runReader reader $packed $l|]
-            (tag, packed1, l1) <- liftA3 (,,) (getField '(,,) 0 tpl) (getField '(,,) 1 tpl) (getField '(,,) 2 tpl)
+            tpl <- bind [|runPackedReader reader $packed $l|]
+            (tag, packed1, l1) <-
+                liftA3
+                    (,,)
+                    (getField' '(,,) 0 tpl $ \n -> [p|($(q n) :: Tag)|])
+                    (getField '(,,) 1 tpl)
+                    (getField '(,,) 2 tpl)
             returns $ case_ tag $ B.do
                 forM_ ([0 ..] `zip` caseReaders) $ \(i, caseReader) ->
-                    matchConst (litP $ IntegerL i) [|runReader $(q caseReader) $(q packed1) $(q l1)|]
+                    matchConst (litP $ IntegerL i) [|runPackedReader $(q caseReader) $(q packed1) $(q l1)|]
                 matchWild [|fail "Bad Tag"|]

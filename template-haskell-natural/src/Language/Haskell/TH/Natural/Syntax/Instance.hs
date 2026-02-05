@@ -6,7 +6,6 @@ module Language.Haskell.TH.Natural.Syntax.Instance (
 
     -- * Functions
     setOverlap,
-    unsetOverlap,
     addInstanceArg,
 
     -- * Re-export
@@ -18,6 +17,7 @@ import Language.Haskell.TH (Q)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
+import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons
 
 type InstanceDefinition = Q InstanceD
@@ -33,12 +33,8 @@ newInstance className builder = runBaseBuilder builder instance_
 setOverlap :: TH.Overlap -> InstanceBuilder ()
 setOverlap = (overlap ?=)
 
--- | Unset the 'Overlap' pragma associated with the instance (if any)
-unsetOverlap :: InstanceBuilder ()
-unsetOverlap = overlap .= (Nothing :: Maybe TH.Overlap)
-
 -- | Add an type argument to the instance
-addInstanceArg :: TH.Q TH.Type -> InstanceBuilder ()
+addInstanceArg :: (QBuilder t TH.Type) => t -> InstanceBuilder ()
 addInstanceArg qty = do
-    ty' <- liftB qty
+    ty' <- liftB $ gen qty
     unsafeWithState $ ty %= (`TH.AppT` ty')
