@@ -20,7 +20,10 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do (
     module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
+import Control.Applicative
+import Control.Arrow (second)
 import Control.Lens hiding (Empty)
+import Control.Monad (forM)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
@@ -28,7 +31,7 @@ import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax (ModName (..), nameBase)
-import Language.Haskell.TH.Syntax.ExtractedCons
+import Language.Haskell.TH.Syntax.ExtractedCons hiding (expr)
 
 type DoExprDefinition = TH.Q DoE
 
@@ -88,10 +91,27 @@ instance ExprBuilder DoExprBuilder where
                         Let _ -> True
                         _ -> False
                     )
-    withDeconstruct _ f = impure $ do
-        (varName, decons) <- f Nothing
-        steps <|= Decons decons
-        return varName
+    withDeconstruct expr f = impure $ do
+        prevSteps <- view steps
+        (newSteps, mres) <-
+            second asum . unzip
+                <$> forM
+                    prevSteps
+                    ( \case
+                        Decons d
+                            | _src d == expr -> do
+                                (res, d') <- f $ Just d
+                                pure (Decons d', Just res)
+                        s -> pure (s, Nothing)
+                    )
+        case mres of
+            Nothing -> do
+                (res, newDecons) <- f Nothing
+                steps .= (Decons newDecons : newSteps)
+                return res
+            Just res -> do
+                steps .= newSteps
+                return res
 
     addLet b = impure $ steps |>= Let b
 
