@@ -13,6 +13,8 @@ library
       Language.Haskell.TH.Natural.Internal.Name
       Language.Haskell.TH.Natural.Internal.Utils
       Language.Haskell.TH.Natural.Syntax.Builder
+      Language.Haskell.TH.Natural.Syntax.Builder.Internal
+      Language.Haskell.TH.Natural.Syntax.Builder.Monad
       Language.Haskell.TH.Natural.Syntax.Case
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common

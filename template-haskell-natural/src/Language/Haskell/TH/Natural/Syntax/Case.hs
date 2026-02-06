@@ -25,6 +25,9 @@ module Language.Haskell.TH.Natural.Syntax.Case (
     var,
     constant,
     constructor,
+
+    -- * Reexports
+    module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
 import Control.Lens hiding (Empty)
@@ -33,6 +36,7 @@ import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Internal.Utils
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
+import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (body)
 

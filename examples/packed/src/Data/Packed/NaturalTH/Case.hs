@@ -18,9 +18,13 @@ import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail)
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Case
 import Language.Haskell.TH.Natural.Syntax.Expr.Do
+import qualified Language.Haskell.TH.Natural.Syntax.Expr.Do as Do
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
+import qualified Language.Haskell.TH.Natural.Syntax.Expr.Simple as Expr
 import Language.Haskell.TH.Natural.Syntax.Func
 import Language.Haskell.TH.Natural.Syntax.Signature
+import qualified Language.Haskell.TH.Natural.Syntax.Signature as Sig
+import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Quotable
 
 caseFName :: Name -> Name
@@ -32,34 +36,36 @@ genCase tyName = do
     newFunc (nameBase $ caseFName tyName) $ do
         inline
         setSignature caseSignature
-        bodyFromExp $ B.do
-            args <- forM [0 .. length cs - 1] $ const arg
-            returns [|mkPackedReader $(newExpr $ caseBody args)|]
+        bodyFromExp $ Expr.do
+            caseReaders <- forM [0 .. length cs - 1] $ const arg
+            returns
+                [|
+                    mkPackedReader
+                        $( gen $ Expr.do
+                            packed <- q <$> arg
+                            l <- q <$> arg
+                            returns $ Do.do
+                                tpl <- bind [|runPackedReader reader $packed $l|]
+                                (tag, packed1, l1) <-
+                                    liftA3
+                                        (,,)
+                                        (getField' '(,,) 0 tpl $ \n -> [p|($(q n) :: Tag)|])
+                                        (getField '(,,) 1 tpl)
+                                        (getField '(,,) 2 tpl)
+                                returns $ case_ tag $ B.do
+                                    forM_ ([0 ..] `zip` caseReaders) $ \(i, caseReader) ->
+                                        matchConst (litP $ IntegerL i) [|runPackedReader $(q caseReader) $(q packed1) $(q l1)|]
+                                    matchWild [|Prelude.fail "Bad Tag"|]
+                         )
+                    |]
   where
-    caseSignature = B.do
+    caseSignature = Sig.do
         (sourceType, _) <- liftB $ resolveAppliedType tyName
         branchesTypes <- liftB $ getBranchesTyList tyName []
         r <- qCon <$> liftB (newTypeVar "r")
         b <- qCon <$> liftB (newTypeVar "b")
-        forM_ branchesTypes $ \branchType -> B.do
+        forM_ branchesTypes $ \branchType -> Sig.do
             addParam $
                 let branchTypeList = q $ foldr (\a rest -> ConT '(:) `AppT` a `AppT` rest) (ConT '[]) branchType
                  in [t|PackedReader $branchTypeList $r $b|]
         setResultType [t|PackedReader '[$(q sourceType)] $r $b|]
-    caseBody :: [Exp] -> SimpleExprBuilder Empty Ready ()
-    caseBody caseReaders = B.do
-        packed <- q <$> arg
-        l <- q <$> arg
-        returns $ newDo $ B.do
-            -- NOTE: 'newDo' Can be removed, but leave it to show it's a do-expression
-            tpl <- bind [|runPackedReader reader $packed $l|]
-            (tag, packed1, l1) <-
-                liftA3
-                    (,,)
-                    (getField' '(,,) 0 tpl $ \n -> [p|($(q n) :: Tag)|])
-                    (getField '(,,) 1 tpl)
-                    (getField '(,,) 2 tpl)
-            returns $ case_ tag $ B.do
-                forM_ ([0 ..] `zip` caseReaders) $ \(i, caseReader) ->
-                    matchConst (litP $ IntegerL i) [|runPackedReader $(q caseReader) $(q packed1) $(q l1)|]
-                matchWild [|fail "Bad Tag"|]

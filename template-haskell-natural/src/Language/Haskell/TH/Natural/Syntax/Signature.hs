@@ -22,6 +22,7 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
 
     -- * Re-export
     newTypeVar,
+    module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
 import Control.Lens ((?=), (^.), (|>=))
@@ -32,6 +33,7 @@ import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
+import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline, tyVarBndr)
 

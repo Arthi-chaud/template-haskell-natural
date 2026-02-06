@@ -18,6 +18,9 @@ module Language.Haskell.TH.Natural.Syntax.Func (
     inline,
     setInline,
     addPragma,
+
+    -- * Reexports
+    module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
 import Control.Lens
@@ -27,6 +30,7 @@ import Data.Maybe (maybeToList)
 import Language.Haskell.TH (Q, mkName)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder
+import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.QBuilder (QBuilder, gen)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName, inline)
 

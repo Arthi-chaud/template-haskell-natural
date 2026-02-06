@@ -18,6 +18,7 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Simple (
 
     -- * Reexport
     module Language.Haskell.TH.Natural.Syntax.Expr.Class,
+    module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
 import Control.Lens (makeLenses, view, views, (.=), (?=), (^.), (|>=))
@@ -27,6 +28,7 @@ import Data.List (partition)
 import Data.Maybe
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail, (>>=))
+import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.QBuilder (gen)
@@ -87,6 +89,6 @@ instance ExprBuilder SimpleExprBuilder where
                 [] -> id
                 exprs -> TH.LetE exprs
         resExp <- case st ^. returnedExp of
-            Nothing -> fail "Missing returned expression"
+            Nothing -> Prelude.fail "Missing returned expression"
             Just e -> return e
         return $ lamOrId $ letOrId resExp

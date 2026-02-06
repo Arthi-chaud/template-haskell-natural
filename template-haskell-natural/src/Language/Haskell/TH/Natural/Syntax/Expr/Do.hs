@@ -17,11 +17,13 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do (
 
     -- * Reexport
     module Language.Haskell.TH.Natural.Syntax.Expr.Class,
+    module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
 import Control.Lens hiding (Empty)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder
+import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.QBuilder
