@@ -63,6 +63,8 @@ test-suite unit
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Curry
+      CurrySpec
       Paths_template_haskell_natural
   hs-source-dirs:
       test
@@ -86,6 +88,7 @@ test-suite unit
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base
+    , extract-cons
     , hspec
     , template-haskell
     , template-haskell-natural
