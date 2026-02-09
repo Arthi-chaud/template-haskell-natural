@@ -65,6 +65,8 @@ test-suite unit
   other-modules:
       Curry
       CurrySpec
+      Tuple
+      TupleSpec
       Paths_template_haskell_natural
   hs-source-dirs:
       test

@@ -15,6 +15,9 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Class (
     -- * Deconstruction
     getField,
     getField',
+    getTupleField,
+    getTupleField',
+    getField'',
     strict,
 ) where
 
@@ -56,14 +59,14 @@ letBind_ isStrict b = unsafeCastStep $ do
     addLet $ MkBind bindName expr isStrict
     return $ TH.VarE bindName
 
-getField' :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> m step Empty TH.Exp
-getField' conName idx qExpr fPat = unsafeCastStep $ do
+getField'' :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => Either Int TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> m step Empty TH.Exp
+getField'' conName idx qExpr fPat = unsafeCastStep $ do
     expr <- liftB $ gen qExpr
     withDeconstruct expr $ \case
         Nothing -> do
             patVarName <- liftB $ TH.newName "pat"
             pat <- liftB $ gen $ fPat $ TH.VarP patVarName
-            fieldCount <- liftB $ conFieldCount conName
+            fieldCount <- liftB $ either pure conFieldCount conName
             let newDecons = MkDec conName [(idx, pat)] expr fieldCount
             return (TH.VarE patVarName, newDecons)
         Just (MkDec conN fieldVarNames _ totalFieldCount) -> do
@@ -82,7 +85,16 @@ getField' conName idx qExpr fPat = unsafeCastStep $ do
             return (TH.VarE patVarName, newDecons)
 
 getField :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => TH.Name -> Int -> b -> m step Empty TH.Exp
-getField conName idx qExpr = getField' conName idx qExpr pure
+getField conName idx qExpr = getField'' (Right conName) idx qExpr pure
+
+getField' :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> m step Empty TH.Exp
+getField' conName = getField'' (Right conName)
+
+getTupleField :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => Int -> Int -> b -> m step Empty TH.Exp
+getTupleField size idx qExpr = getField'' (Left size) idx qExpr pure
+
+getTupleField' :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => Int -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> m step Empty TH.Exp
+getTupleField' size = getField'' (Left size)
 
 strict :: TH.Pat -> TH.Q TH.Pat
 strict = pure . TH.BangP

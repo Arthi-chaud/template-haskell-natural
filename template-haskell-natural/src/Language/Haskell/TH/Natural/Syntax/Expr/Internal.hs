@@ -17,8 +17,16 @@ data Binding = MkBind {_varName :: TH.Name, _bound :: TH.Exp, _strict :: Bool} d
 bindingToDec :: Binding -> TH.Dec
 bindingToDec (MkBind n expr s) = TH.ValD ((if s then TH.BangP else id) $ TH.VarP n) (TH.NormalB expr) []
 
-data Deconstruct = MkDec {_conName :: TH.Name, _fieldPatterns :: [(Int, TH.Pat)], _src :: TH.Exp, _totalFieldCount :: Int} deriving (Eq, Show)
+data Deconstruct = MkDec
+    { _conName :: Either Int TH.Name
+    -- ^ Left is for tuples. The Int represents the size of the tuple
+    , _fieldPatterns :: [(Int, TH.Pat)]
+    , _src :: TH.Exp
+    , _totalFieldCount :: Int
+    }
+    deriving (Eq, Show)
 
 deconstructToDec :: Deconstruct -> TH.Dec
-deconstructToDec (MkDec cName fields src count) =
-    TH.ValD (TH.ConP cName [] ([0 .. count - 1] <&> \i -> fromMaybe TH.WildP (lookup i fields))) (TH.NormalB src) []
+deconstructToDec (MkDec con fields src count) =
+    let conPat = either (const TH.TupP) (`TH.ConP` []) con
+     in TH.ValD (conPat ([0 .. count - 1] <&> \i -> fromMaybe TH.WildP (lookup i fields))) (TH.NormalB src) []
