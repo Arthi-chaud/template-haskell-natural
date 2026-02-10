@@ -20,10 +20,9 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do (
     module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
-import Control.Applicative
-import Control.Arrow (second)
 import Control.Lens hiding (Empty)
-import Control.Monad (forM)
+import Control.Monad (foldM)
+import Data.Bifunctor
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
@@ -91,36 +90,37 @@ instance ExprBuilder DoExprBuilder where
                         Let _ -> True
                         _ -> False
                     )
-    withDeconstruct expr f = impure $ do
-        prevSteps <- view steps
-        (newSteps, mres) <-
-            second asum . unzip
-                <$> forM
-                    prevSteps
-                    ( \case
-                        Decons d
-                            | _src d == expr -> do
-                                (res, d') <- f $ Just d
-                                pure (Decons d', Just res)
-                        s -> pure (s, Nothing)
-                    )
-        case mres of
-            Nothing -> do
-                (res, newDecons) <- f Nothing
-                steps .= (Decons newDecons : newSteps)
-                return res
-            Just res -> do
-                steps .= newSteps
-                return res
+    addDeconstruct d = impure $ steps <|= Decons d
 
-    addLet b = impure $ steps |>= Let b
+    addLet b = impure $ steps <|= Let b
 
     runExprBuilder b = do
         MkDoEBS doSteps <- runBaseBuilder b (MkDoEBS [])
-        return $ MkDoE Nothing $ reverse $ fmap stepToStmt doSteps
+        mergedSteps <- _compileDoExpr $ reverse doSteps
+        return $ MkDoE Nothing $ fmap stepToStmt mergedSteps
       where
         stepToStmt = \case
             Bind (MkBind n e s) -> TH.BindS ((if s then TH.BangP else id) $ TH.VarP n) e
             Stmt e -> TH.NoBindS e
             Let let_ -> TH.LetS [bindingToDec let_]
             Decons decons -> TH.LetS [deconstructToDec decons]
+
+-- | Merges deconstructions of common expressions together
+_compileDoExpr :: (MonadFail m) => [DoExprStep] -> m [DoExprStep]
+_compileDoExpr = mergeDeconsSteps
+  where
+    -- TODO: Merge Bind and decons, but 'Binding' uses a name for the pattern
+    mergeDeconsSteps [] = pure []
+    mergeDeconsSteps (Decons d : rest) = case partitionMatchingDecons (_src d) rest of
+        ([], _) -> (Decons d :) <$> mergeDeconsSteps rest
+        (ds, rest') -> do
+            d' <- Decons <$> foldM mergeDeconstruct d ds
+            (d' :) <$> mergeDeconsSteps rest'
+    mergeDeconsSteps (s : rest) = (s :) <$> mergeDeconsSteps rest
+    partitionMatchingDecons :: TH.Exp -> [DoExprStep] -> ([Deconstruct], [DoExprStep])
+    partitionMatchingDecons _ [] = ([], [])
+    partitionMatchingDecons e (Decons d : r) =
+        if _src d == e
+            then first (d :) $ partitionMatchingDecons e r
+            else second (Decons d :) $ partitionMatchingDecons e r
+    partitionMatchingDecons e (s : r) = second (s :) $ partitionMatchingDecons e r

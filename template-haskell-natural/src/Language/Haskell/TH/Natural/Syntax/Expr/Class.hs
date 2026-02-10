@@ -29,12 +29,12 @@ import Language.Haskell.TH.Natural.Internal.Utils
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail)
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.QBuilder
-import Text.Printf
 
 class ExprBuilder (m :: BuilderStep -> BuilderStep -> Type -> Type) where
     type Definition m
 
-    withDeconstruct :: TH.Exp -> (Maybe Deconstruct -> m step step (a, Deconstruct)) -> m step Empty a
+    -- withDeconstruct :: TH.Exp -> (Maybe Deconstruct -> m step step (a, Deconstruct)) -> m step Empty a
+    addDeconstruct :: Deconstruct -> m step Empty ()
 
     addLet :: Binding -> m step Empty ()
     letCount :: m step step Int
@@ -59,30 +59,24 @@ letBind_ isStrict b = unsafeCastStep $ do
     addLet $ MkBind bindName expr isStrict
     return $ TH.VarE bindName
 
-getField'' :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => Either Int TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> m step Empty TH.Exp
+getField'' ::
+    (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) =>
+    -- | The constructor used to deconstruct
+    Either Int TH.Name ->
+    -- | The index of the field in the constructor
+    Int ->
+    -- | The expression to deconstruct
+    b ->
+    -- | Modify the created pattern (e.g. add BangP or type annotation)
+    (TH.Pat -> TH.Q TH.Pat) ->
+    m step Empty TH.Exp
 getField'' conName idx qExpr fPat = unsafeCastStep $ do
     expr <- liftB $ gen qExpr
-    withDeconstruct expr $ \case
-        Nothing -> do
-            patVarName <- liftB $ TH.newName "pat"
-            pat <- liftB $ gen $ fPat $ TH.VarP patVarName
-            fieldCount <- liftB $ either pure conFieldCount conName
-            let newDecons = MkDec conName [(idx, pat)] expr fieldCount
-            return (TH.VarE patVarName, newDecons)
-        Just (MkDec conN fieldVarNames _ totalFieldCount) -> do
-            when (conN /= conName) $
-                fail $
-                    printf "The following expression has already been deconstructed with the %s constructor: %s" (show conN) (show expr)
-            when (isJust $ lookup idx fieldVarNames) $
-                fail $
-                    printf "When deconstructing the following expression, the field at index %d in constructor %s has already been bound: %s" idx (show conName) (show expr)
-            when (idx >= totalFieldCount) $
-                fail $
-                    printf "When deconstructing the following expression, the constructor %s has %d fields. Index %d is out of bounds." (show conName) totalFieldCount idx
-            patVarName <- liftB $ TH.newName "pat"
-            pat <- liftB $ gen $ fPat $ TH.VarP patVarName
-            let newDecons = MkDec conName ((idx, pat) : fieldVarNames) expr totalFieldCount
-            return (TH.VarE patVarName, newDecons)
+    patVarName <- liftB $ TH.newName "pat"
+    pat <- liftB $ gen $ fPat $ TH.VarP patVarName
+    fieldCount <- liftB $ either pure conFieldCount conName
+    addDeconstruct $ MkDec conName [(idx, pat)] expr fieldCount
+    return $ TH.VarE patVarName
 
 getField :: (ExprBuilder m, QBuilder b TH.Exp, m ~ Builder s) => TH.Name -> Int -> b -> m step Empty TH.Exp
 getField conName idx qExpr = getField'' (Right conName) idx qExpr pure
