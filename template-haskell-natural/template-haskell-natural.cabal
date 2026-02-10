@@ -21,8 +21,14 @@ library
       Language.Haskell.TH.Natural.Syntax.Expr.Base
       Language.Haskell.TH.Natural.Syntax.Expr.Class
       Language.Haskell.TH.Natural.Syntax.Expr.Do
+      Language.Haskell.TH.Natural.Syntax.Expr.Do.State
+      Language.Haskell.TH.Natural.Syntax.Expr.Do.Untyped
       Language.Haskell.TH.Natural.Syntax.Expr.Internal
       Language.Haskell.TH.Natural.Syntax.Expr.Simple
+      Language.Haskell.TH.Natural.Syntax.Expr.Simple.State
+      Language.Haskell.TH.Natural.Syntax.Expr.Simple.Typed
+      Language.Haskell.TH.Natural.Syntax.Expr.Simple.Untyped
+      Language.Haskell.TH.Natural.Syntax.Expr.Typed.Builder
       Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance
       Language.Haskell.TH.Natural.Syntax.Signature
