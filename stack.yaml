@@ -4,6 +4,7 @@ packages:
   - template-haskell-lenses
   - template-haskell-natural
   - examples/packed
+  - examples/pushable
 
 extra-deps:
   - packed-data-0.1.0.3

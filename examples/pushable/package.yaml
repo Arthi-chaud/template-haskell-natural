@@ -1,0 +1,44 @@
+name: pushable-th-natural
+version: 1.0.0.0
+
+description: "Reimplementation of github.com/granule-project/deriving-distributed-linear-haskell"
+
+default-extensions:
+  - TemplateHaskell
+  - RecordWildCards
+  - MultiParamTypeClasses
+  - LambdaCase
+
+dependencies:
+  - base
+  - linear-base
+  - template-haskell
+  - template-haskell-natural
+  - template-haskell-lenses
+  - th-abstraction
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wmissing-export-lists
+  - -Wmissing-home-modules
+  - -Wpartial-fields
+  - -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+tests:
+  unit:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - hspec
+      - pushable-th-natural
