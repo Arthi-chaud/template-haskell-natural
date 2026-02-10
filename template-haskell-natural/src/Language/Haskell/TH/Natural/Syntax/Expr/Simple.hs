@@ -57,8 +57,8 @@ arg = do
     argNames |>= nextArgName
     return $ TH.VarE nextArgName
 
-instance ExprBuilder SimpleExprBuilder where
-    type Definition SimpleExprBuilder = SimpleExprDefinition
+instance IsExprBuilder SimpleExprBuilderState where
+    type Definition SimpleExprBuilderState = SimpleExprDefinition
     returns q = unsafeCastStep $ do
         expr <- liftB $ gen q
         returnedExp ?= expr

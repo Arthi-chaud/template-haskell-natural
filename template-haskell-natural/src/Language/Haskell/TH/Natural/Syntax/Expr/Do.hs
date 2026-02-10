@@ -76,8 +76,8 @@ bind_ s q = impure $ do
     steps <|= Bind (MkBind varName e s)
     return $ TH.VarE varName
 
-instance ExprBuilder DoExprBuilder where
-    type Definition DoExprBuilder = DoExprDefinition
+instance IsExprBuilder DoExprBuilderState where
+    type Definition DoExprBuilderState = DoExprDefinition
     returns q = unsafeCastStep $ do
         e <- liftB $ gen q
         steps <|= Stmt e
