@@ -1,10 +1,9 @@
 {-# LANGUAGE QualifiedDo #-}
 
-module Tuple where
+module Tuple (generateTupleBoilerplate, generateTupleClass, generateTupleInstance) where
 
 import Control.Monad
 import Data.Constructor.Extract
-import Data.List (singleton)
 import Language.Haskell.TH
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Class
@@ -57,5 +56,5 @@ generateTupleInstance element size = gen $ newInstance (mkName $ "Tuple" ++ elem
 generateTupleBoilerplate :: Int -> Q [Dec]
 generateTupleBoilerplate n = fmap concat $ forM [2 .. n] $ \size -> do
     class_ <- generateTupleClass size
-    instances <- fmap concat $ forM [2 .. size] $ \elem -> generateTupleInstance elem size
+    instances <- fmap concat $ forM [2 .. size] $ \elem' -> generateTupleInstance elem' size
     return (class_ ++ instances)

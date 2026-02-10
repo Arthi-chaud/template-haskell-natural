@@ -21,9 +21,7 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Class (
     strict,
 ) where
 
-import Control.Monad
 import Data.Kind
-import Data.Maybe
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Internal.Utils
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail)
