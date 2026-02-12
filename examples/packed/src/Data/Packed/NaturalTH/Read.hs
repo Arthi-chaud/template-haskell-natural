@@ -9,12 +9,12 @@ import Data.Packed.NaturalTH.Case (caseFName)
 import qualified Data.Packed.Reader as R
 import Data.Packed.TH.Utils
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import Language.Haskell.TH.Natural.Syntax.Func
 import Language.Haskell.TH.Natural.Syntax.Signature
-import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Quotable
 
 genRead :: TH.Name -> TH.DecsQ
@@ -30,7 +30,7 @@ genRead tyName = newFunc ("read" ++ TH.nameBase tyName) $ B.do
         r <- liftB $ newTypeVar "r"
         forM_ typeVariables $ \tyVar ->
             addConstraint [t|R.Unpackable $(TH.varT tyVar)|]
-        setResultType [t|R.PackedReader '[$(q resolvedType)] $(qCon r) $(q resolvedType)|]
+        setResultType [t|R.PackedReader '[$(q resolvedType)] $(qEC r) $(q resolvedType)|]
 
 genReadLambda :: TH.Con -> TH.Q TH.Exp
 genReadLambda con = B.do
@@ -39,7 +39,7 @@ genReadLambda con = B.do
         go (_ : args) acc =
             [|
                 R.reader
-                    R.>>= $( gen $ B.do
+                    R.>>= $( genExpr $ newExpr $ B.do
                                 parsedArg <- arg
                                 returns (go args (acc ++ [parsedArg]))
                            )

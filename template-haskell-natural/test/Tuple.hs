@@ -5,6 +5,7 @@ module Tuple (generateTupleBoilerplate, generateTupleClass, generateTupleInstanc
 import Control.Monad
 import Data.Constructor.Extract
 import Language.Haskell.TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Class
@@ -12,12 +13,11 @@ import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import Language.Haskell.TH.Natural.Syntax.Func (bodyFromExp, newFunc)
 import Language.Haskell.TH.Natural.Syntax.Instance
 import Language.Haskell.TH.Natural.Syntax.Signature
-import Language.Haskell.TH.QBuilder
 
 -- https://serokell.io/blog/introduction-to-template-haskell#example%3A-generating-instances
 
 generateTupleClass :: Int -> Q [Dec]
-generateTupleClass n = gen $ newClass ("Tuple" ++ n') $ B.do
+generateTupleClass n = genDecs $ newClass ("Tuple" ++ n') $ B.do
     when (n <= 0) $
         Prelude.fail $
             "Non-Positive Size: " ++ n'
@@ -33,7 +33,7 @@ generateTupleClass n = gen $ newClass ("Tuple" ++ n') $ B.do
     n' = show n
 
 generateTupleInstance :: Int -> Int -> Q [Dec]
-generateTupleInstance element size = gen $ newInstance (mkName $ "Tuple" ++ element') $ B.do
+generateTupleInstance element size = genDecs $ newInstance (mkName $ "Tuple" ++ element') $ B.do
     when (element > size) $
         Prelude.fail
             "Field index is larger than tuple size"

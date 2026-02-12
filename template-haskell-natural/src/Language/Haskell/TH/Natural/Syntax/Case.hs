@@ -33,31 +33,31 @@ module Language.Haskell.TH.Natural.Syntax.Case (
 import Control.Lens hiding (Empty)
 import Data.Constructor.Extract
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Internal.Utils
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
-import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (body)
 
 type CaseDefinition = TH.Q CaseE
 
 type CaseExprBuilder = ConstBuilder CaseE
 
-case_ :: (QBuilder b TH.Exp) => b -> CaseExprBuilder () -> CaseDefinition
+case_ :: (GenExpr b) => b -> CaseExprBuilder () -> CaseDefinition
 case_ q builder = do
-    e <- gen q
+    e <- genExpr q
     runBaseBuilder builder $ MkCaseE e []
 
-matchConst :: ((QBuilder b1 TH.Pat), QBuilder b2 TH.Exp) => b1 -> b2 -> CaseExprBuilder ()
+matchConst :: (GenPat b1, GenExpr b2) => b1 -> b2 -> CaseExprBuilder ()
 matchConst b1 b2 = do
-    patt <- liftB $ gen b1
-    e <- liftB $ gen b2
+    patt <- liftB $ genPat b1
+    e <- liftB $ genExpr b2
     matches |>= TH.Match patt (TH.NormalB e) []
 
-matchWild :: (QBuilder b TH.Exp) => b -> CaseExprBuilder ()
+matchWild :: (GenExpr b) => b -> CaseExprBuilder ()
 matchWild b = do
-    e <- liftB $ gen b
+    e <- liftB $ genExpr b
     matches |>= TH.Match TH.WildP (TH.NormalB e) []
 
 matchCon :: TH.Name -> ConMatchBuilder Empty Ready () -> CaseExprBuilder ()
@@ -83,8 +83,8 @@ var = Var
 constructor :: TH.Name -> (Int -> PatternBuilder a) -> Pattern a
 constructor = NestedMatch
 
-constant :: (QBuilder b TH.Pat) => b -> Pattern ()
-constant = Constant . gen
+constant :: (GenPat b) => b -> Pattern ()
+constant = Constant . genPat
 
 class ConPatternBuilder m where
     setFieldPattern :: Int -> TH.Pat -> m ()
@@ -114,7 +114,7 @@ instance ConPatternBuilder (ConMatchBuilder step step) where
 instance ConPatternBuilder PatternBuilder where
     setFieldPattern fidx patt = (pats . ix fidx) .= patt
 
-body :: (QBuilder b TH.Exp) => b -> ConMatchBuilder Empty Ready ()
+body :: (GenExpr b) => b -> ConMatchBuilder Empty Ready ()
 body q = impure $ do
-    e <- liftB (gen q)
+    e <- liftB $ genExpr q
     matchBody ?= e

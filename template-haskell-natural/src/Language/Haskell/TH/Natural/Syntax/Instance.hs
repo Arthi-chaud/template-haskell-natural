@@ -17,11 +17,11 @@ module Language.Haskell.TH.Natural.Syntax.Instance (
 import Control.Lens
 import Language.Haskell.TH (Q)
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Common
-import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons
 
 type InstanceDefinition = Q InstanceD
@@ -38,7 +38,7 @@ setOverlap :: TH.Overlap -> InstanceBuilder ()
 setOverlap = (overlap ?=)
 
 -- | Add an type argument to the instance
-addInstanceArg :: (QBuilder t TH.Type) => t -> InstanceBuilder ()
+addInstanceArg :: (GenType t) => t -> InstanceBuilder ()
 addInstanceArg qty = do
-    ty' <- liftB $ gen qty
+    ty' <- liftB $ genTy qty
     unsafeWithState $ ty %= (`TH.AppT` ty')

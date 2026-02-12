@@ -60,7 +60,6 @@ mkToJSONFunction :: Type a -> FuncDefinition (a -> Maybe ByteString)
 mkToJSONFunction ty = mkFunc $ F.do
     a <- arg
     strA <- let_ [|show $(varE a)|]
-    -- strA <- letStrict_ [|show $(varE a)|]
     return_ [|Just $(varE strA)|]
 
 mkMaybeFunction :: FunctionDefinition (Maybe Int)

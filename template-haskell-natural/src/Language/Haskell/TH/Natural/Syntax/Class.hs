@@ -19,11 +19,11 @@ module Language.Haskell.TH.Natural.Syntax.Class (
 import Control.Lens
 import Language.Haskell.TH hiding (cxt, funDep)
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Common
-import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName)
 
 type ClassDefinition = Q ClassD
@@ -48,7 +48,7 @@ addFunDep :: [TypeVarName] -> [TypeVarName] -> ClassBuilder ()
 addFunDep l r = funDep |>= FunDep (fmap (^. name) l) (fmap (^. name) r)
 
 -- | Add a function signature to the class
-addSignature :: (QBuilder a TH.Type) => String -> a -> ClassBuilder ()
+addSignature :: (GenType a) => String -> a -> ClassBuilder ()
 addSignature fName tyBuilder = do
-    sigTy <- liftB $ gen tyBuilder
-    addBody $ pure $ TH.SigD (mkName fName) sigTy
+    sigTy <- liftB $ genTy tyBuilder
+    addBody $ TH.SigD (mkName fName) sigTy

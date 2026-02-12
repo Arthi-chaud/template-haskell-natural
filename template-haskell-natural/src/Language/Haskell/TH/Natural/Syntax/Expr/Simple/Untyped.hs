@@ -27,12 +27,12 @@ import Data.Functor ((<&>))
 import Data.List (partition)
 import Data.Maybe
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail, (>>=))
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple.State
 import Language.Haskell.TH.Natural.Syntax.Expr.Untyped
-import Language.Haskell.TH.QBuilder (gen)
 import Language.Haskell.TH.Syntax.ExtractedCons (LamE (..))
 import Prelude hiding ((>>=))
 
@@ -51,7 +51,7 @@ arg = do
 instance IsExprBuilder SimpleExprBuilderState where
     type Definition SimpleExprBuilderState = SimpleExprDefinition
     returns q = unsafeCastStep $ do
-        expr <- liftB $ gen q
+        expr <- liftB $ genExpr q
         returnedExp ?= expr
 
     addDeconstruct d = impure $ deconstructs |>= d

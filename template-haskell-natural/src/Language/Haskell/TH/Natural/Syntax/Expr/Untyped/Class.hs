@@ -21,10 +21,10 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Untyped.Class (
 ) where
 
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Internal.Utils
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail)
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
-import Language.Haskell.TH.QBuilder
 
 class IsExprBuilder st where
     type Definition st
@@ -34,28 +34,28 @@ class IsExprBuilder st where
     addLet :: Binding -> Builder st step Empty ()
     letCount :: Builder st step step Int
 
-    returns :: (QBuilder b TH.Exp) => b -> Builder st step Ready ()
+    returns :: (GenExpr b) => b -> Builder st step Ready ()
     runExprBuilder :: Builder st step Ready () -> Definition st
 
-instance (IsExprBuilder st, QBuilder (Definition st) TH.Exp) => QBuilder (Builder st step Ready ()) TH.Exp where
-    gen = gen . runExprBuilder
+instance (IsExprBuilder st, GenExpr (Definition st)) => GenExpr (Builder st step Ready ()) where
+    genExpr = genExpr . runExprBuilder
 
-strictLetBind :: (IsExprBuilder st, QBuilder b TH.Exp) => b -> Builder st step Empty TH.Exp
+strictLetBind :: (IsExprBuilder st, GenExpr b) => b -> Builder st step Empty TH.Exp
 strictLetBind = letBind_ True
 
-letBind :: (IsExprBuilder st, QBuilder b TH.Exp) => b -> Builder st step Empty TH.Exp
+letBind :: (IsExprBuilder st, GenExpr b) => b -> Builder st step Empty TH.Exp
 letBind = letBind_ False
 
-letBind_ :: (IsExprBuilder st, QBuilder b TH.Exp) => Bool -> b -> Builder st step Empty TH.Exp
+letBind_ :: (IsExprBuilder st, GenExpr b) => Bool -> b -> Builder st step Empty TH.Exp
 letBind_ isStrict b = unsafeCastStep $ do
     prevLetCount <- letCount
     bindName <- liftB $ TH.newName ("var" ++ show prevLetCount)
-    expr <- liftB $ gen b
+    expr <- liftB $ genExpr b
     addLet $ MkBind bindName expr isStrict
     return $ TH.VarE bindName
 
 getField'' ::
-    (IsExprBuilder st, QBuilder b TH.Exp) =>
+    (IsExprBuilder st, GenExpr b) =>
     -- | The constructor used to deconstruct
     Either Int TH.Name ->
     -- | The index of the field in the constructor
@@ -66,23 +66,23 @@ getField'' ::
     (TH.Pat -> TH.Q TH.Pat) ->
     Builder st step Empty TH.Exp
 getField'' conName idx qExpr fPat = unsafeCastStep $ do
-    expr <- liftB $ gen qExpr
+    expr <- liftB $ genExpr qExpr
     patVarName <- liftB $ TH.newName "pat"
-    pat <- liftB $ gen $ fPat $ TH.VarP patVarName
+    pat <- liftB $ genPat $ fPat $ TH.VarP patVarName
     fieldCount <- liftB $ either pure conFieldCount conName
     addDeconstruct $ MkDec conName [(idx, pat)] expr fieldCount
     return $ TH.VarE patVarName
 
-getField :: (IsExprBuilder st, QBuilder b TH.Exp) => TH.Name -> Int -> b -> Builder st step Empty TH.Exp
+getField :: (IsExprBuilder st, GenExpr b) => TH.Name -> Int -> b -> Builder st step Empty TH.Exp
 getField conName idx qExpr = getField'' (Right conName) idx qExpr pure
 
-getField' :: (IsExprBuilder st, QBuilder b TH.Exp) => TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> Builder st step Empty TH.Exp
+getField' :: (IsExprBuilder st, GenExpr b) => TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> Builder st step Empty TH.Exp
 getField' conName = getField'' (Right conName)
 
-getTupleField :: (IsExprBuilder st, QBuilder b TH.Exp) => Int -> Int -> b -> Builder st step Empty TH.Exp
+getTupleField :: (IsExprBuilder st, GenExpr b) => Int -> Int -> b -> Builder st step Empty TH.Exp
 getTupleField size idx qExpr = getField'' (Left size) idx qExpr pure
 
-getTupleField' :: (IsExprBuilder st, QBuilder b TH.Exp) => Int -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> Builder st step Empty TH.Exp
+getTupleField' :: (IsExprBuilder st, GenExpr b) => Int -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> Builder st step Empty TH.Exp
 getTupleField' size = getField'' (Left size)
 
 strict :: TH.Pat -> TH.Q TH.Pat

@@ -14,6 +14,7 @@ import Data.Packed.Reader (runPackedReader)
 import Data.Packed.TH (Tag)
 import Data.Packed.TH.Utils (getBranchesTyList, resolveAppliedType, sanitizeConName)
 import Language.Haskell.TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail)
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Case
@@ -24,7 +25,6 @@ import qualified Language.Haskell.TH.Natural.Syntax.Expr.Simple as Expr
 import Language.Haskell.TH.Natural.Syntax.Func
 import Language.Haskell.TH.Natural.Syntax.Signature
 import qualified Language.Haskell.TH.Natural.Syntax.Signature as Sig
-import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Quotable
 
 caseFName :: Name -> Name
@@ -41,7 +41,7 @@ genCase tyName = do
             returns
                 [|
                     mkPackedReader
-                        $( gen $ Expr.do
+                        $( genExpr $ Expr.do
                             packed <- q <$> arg
                             l <- q <$> arg
                             returns $ Do.do
@@ -62,8 +62,8 @@ genCase tyName = do
     caseSignature = Sig.do
         (sourceType, _) <- liftB $ resolveAppliedType tyName
         branchesTypes <- liftB $ getBranchesTyList tyName []
-        r <- qCon <$> liftB (newTypeVar "r")
-        b <- qCon <$> liftB (newTypeVar "b")
+        r <- qEC <$> liftB (newTypeVar "r")
+        b <- qEC <$> liftB (newTypeVar "b")
         forM_ branchesTypes $ \branchType -> Sig.do
             addParam $
                 let branchTypeList = q $ foldr (\a rest -> ConT '(:) `AppT` a `AppT` rest) (ConT '[]) branchType

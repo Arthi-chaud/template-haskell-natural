@@ -29,9 +29,9 @@ import Data.Constructor.Extract
 import Data.Maybe (maybeToList)
 import Language.Haskell.TH (Q, mkName)
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
-import Language.Haskell.TH.QBuilder (QBuilder, gen)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName, inline)
 
 type FuncDefinition = Q [TH.Dec]
@@ -53,9 +53,9 @@ newFunc fName builder = do
     MkFBS{..} <- runBaseBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
     return ((TH.PragmaD <$> _pragmas) ++ (fromEC <$> maybeToList _signature) ++ [fromEC _dec])
 
-setSignature :: (QBuilder a TH.Type) => a -> FuncBuilder ()
+setSignature :: (GenType a) => a -> FuncBuilder ()
 setSignature sigBuilder = do
-    sig <- liftB $ gen sigBuilder
+    sig <- liftB $ genTy sigBuilder
     fName <- view (dec . name)
     signature ?= MkSigD fName sig
     return ()
@@ -67,9 +67,9 @@ addClause c = (dec . clauses) |>= c
 -- | Uses an Exp as the body of a function
 --
 -- Warning: This operation is destructive, and replaces all previous clauses set using 'addClause'
-bodyFromExp :: (QBuilder b TH.Exp) => b -> FuncBuilder ()
+bodyFromExp :: (GenExpr b) => b -> FuncBuilder ()
 bodyFromExp qe = do
-    e <- liftB $ gen qe
+    e <- liftB $ genExpr qe
     (dec . clauses) .= [TH.Clause [] (TH.NormalB e) []]
 
 -- | Add an inline pragma to the function

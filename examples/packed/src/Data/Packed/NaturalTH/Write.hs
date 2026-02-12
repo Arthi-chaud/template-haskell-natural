@@ -42,7 +42,7 @@ genWrite tyName = newFunc ("write" ++ TH.nameBase tyName) $ B.do
         forM_ typeVariables $ \tyVar ->
             addConstraint [t|P.Packable $(TH.varT tyVar)|]
         addParam resolvedType
-        setResultType [t|NeedsWriter $(q resolvedType) $(qCon r) $(qCon t)|]
+        setResultType [t|NeedsWriter $(q resolvedType) $(qEC r) $(qEC t)|]
 
 conWriteFName :: TH.Name -> TH.Name
 conWriteFName conName = TH.mkName $ "writeCon" ++ sanitizeConName conName
@@ -69,4 +69,4 @@ genConWrite tyName con tag = newFunc (TH.nameBase $ conWriteFName conName) $ B.d
             addConstraint [t|Packable $(TH.varT tyVar)|]
         forM_ conParamTypes $ \(_, argTy) -> B.do
             addParam argTy
-        setResultType [t|NeedsWriter $(q resolvedType) $(qCon r) $(qCon t)|]
+        setResultType [t|NeedsWriter $(q resolvedType) $(qEC r) $(qEC t)|]

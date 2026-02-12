@@ -27,14 +27,14 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
 
 import Control.Lens ((?=), (^.), (|>=))
 import Control.Lens.TH
-import Data.Constructor.Extract (ExtractedConstructor (fromEC))
+import Data.Constructor.Extract
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
-import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline, tyVarBndr)
 
 type SignatureDefinition = Q ForallT
@@ -50,8 +50,8 @@ data SignatureState = MkSBS
 
 makeLenses ''SignatureState
 
-instance QBuilder (SignatureBuilder step Ready ()) TH.Type where
-    gen = fmap fromEC . newSignature
+instance GenType (SignatureBuilder step Ready ()) where
+    genTy = fmap fromEC . newSignature
 
 newSignature :: SignatureBuilder step Ready () -> SignatureDefinition
 newSignature builder = do
@@ -69,23 +69,23 @@ addToForall :: TypeVarName -> SignatureBuilder step step ()
 addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (tyVar ^. name) TH.SpecifiedSpec
 
 -- | Add the given type to the set of constraints
-addConstraint :: (QBuilder a TH.Type) => a -> SignatureBuilder step step ()
+addConstraint :: (GenType a) => a -> SignatureBuilder step step ()
 addConstraint tyBuilder = do
-    constr <- liftB (gen tyBuilder :: Q TH.Type)
+    constr <- liftB $ genTy tyBuilder
     unsafeWithState $
         constraints |>= constr
 
 -- | Set the type as the nth parameter of the function's signature
 --
 -- (n being the number of time 'addParam' was called)
-addParam :: (QBuilder a TH.Type) => a -> SignatureBuilder step step ()
+addParam :: (GenType a) => a -> SignatureBuilder step step ()
 addParam tyBuilder = do
-    param <- liftB (gen tyBuilder :: Q TH.Type)
+    param <- liftB $ genTy tyBuilder
     unsafeWithState $
         params |>= param
 
 -- | Set the result type in the function's signature
-setResultType :: (QBuilder a TH.Type) => a -> SignatureBuilder step Ready ()
+setResultType :: (GenType a) => a -> SignatureBuilder step Ready ()
 setResultType tyBuilder = B.do
-    resTy <- liftB $ gen tyBuilder
+    resTy <- liftB $ genTy tyBuilder
     unsafeWithState $ result ?= resTy

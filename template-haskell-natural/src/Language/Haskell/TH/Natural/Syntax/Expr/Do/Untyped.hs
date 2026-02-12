@@ -25,12 +25,12 @@ import Control.Lens hiding (Empty)
 import Control.Monad (foldM)
 import Data.Bifunctor
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen (GenExpr (genExpr))
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Expr.Do.State
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.Natural.Syntax.Expr.Untyped
-import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax (ModName (..), nameBase)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (expr)
 
@@ -45,16 +45,16 @@ newQualifiedDo modN builder = do
 newDo :: DoExprBuilder step Ready () -> DoExprDefinition
 newDo = runExprBuilder
 
-stmt :: (QBuilder b TH.Exp) => b -> DoExprBuilder step Ready ()
+stmt :: (GenExpr b) => b -> DoExprBuilder step Ready ()
 stmt = returns
 
-strictBind :: (QBuilder b TH.Exp) => b -> DoExprBuilder step Empty TH.Exp
+strictBind :: (GenExpr b) => b -> DoExprBuilder step Empty TH.Exp
 strictBind = bind_ True
 
-bind :: (QBuilder b TH.Exp) => b -> DoExprBuilder step Empty TH.Exp
+bind :: (GenExpr b) => b -> DoExprBuilder step Empty TH.Exp
 bind = bind_ False
 
-bind_ :: (QBuilder b TH.Exp) => Bool -> b -> DoExprBuilder step Empty TH.Exp
+bind_ :: (GenExpr b) => Bool -> b -> DoExprBuilder step Empty TH.Exp
 bind_ s q = impure $ do
     stepCount <-
         views steps $
@@ -65,14 +65,14 @@ bind_ s q = impure $ do
                         _ -> False
                     )
     varName <- liftB $ TH.newName ("var" ++ show stepCount)
-    e <- liftB $ gen q
+    e <- liftB $ genExpr q
     steps <|= Bind (MkBind varName e s)
     return $ TH.VarE varName
 
 instance IsExprBuilder DoExprBuilderState where
     type Definition DoExprBuilderState = DoExprDefinition
     returns q = unsafeCastStep $ do
-        e <- liftB $ gen q
+        e <- liftB $ genExpr q
         steps <|= Stmt e
 
     letCount =

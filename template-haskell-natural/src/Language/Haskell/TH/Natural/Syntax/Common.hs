@@ -2,6 +2,7 @@ module Language.Haskell.TH.Natural.Syntax.Common (addContext, addBody, addBody')
 
 import Control.Lens
 import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder (Builder, liftB)
 import Language.Haskell.TH.Syntax.ExtractedCons
 
@@ -12,9 +13,9 @@ addContext qty = do
     cxt |>= ty_
 
 -- | Add a 'Dec'
-addBody :: (HasDecs s [a]) => TH.Q a -> Builder s step step ()
+addBody :: (HasDecs s [TH.Dec], GenDec a) => a -> Builder s step step ()
 addBody s = do
-    dec <- liftB s
+    dec <- liftB $ genDec s
     decs |>= dec
 
 -- | Add many 'Dec's

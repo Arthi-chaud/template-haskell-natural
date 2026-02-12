@@ -5,13 +5,13 @@ module Curry (genCurries) where
 import Control.Monad
 import Data.Constructor.Extract
 import Language.Haskell.TH
+import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import qualified Language.Haskell.TH.Natural.Syntax.Expr.Simple as E
 import Language.Haskell.TH.Natural.Syntax.Func (bodyFromExp, newFunc, setSignature)
 import Language.Haskell.TH.Natural.Syntax.Signature
 import qualified Language.Haskell.TH.Natural.Syntax.Signature as S
-import Language.Haskell.TH.QBuilder
 
 -- https://wiki.haskell.org/A_practical_Template_Haskell_Tutorial
 
@@ -23,13 +23,13 @@ import Language.Haskell.TH.QBuilder
 --  \f a1 a2 -> f (a1, a2)
 -- @
 curryN :: Int -> Q Exp
-curryN n = gen $ newExpr $ E.do
+curryN n = genExpr $ newExpr $ E.do
     f <- arg
     args <- replicateM n arg
     returns $ f `AppE` TupE (fmap Just args)
 
 curryNSig :: Int -> Q Type
-curryNSig n = gen $ newSignature $ S.do
+curryNSig n = genTy $ newSignature $ S.do
     tupTys <- replicateM n $ liftB (fromEC <$> newTypeVar "a")
 
     fResType <- liftB $ newTypeVar "b"
