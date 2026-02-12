@@ -5,7 +5,7 @@
 module Language.Haskell.TH.QBuilder (QBuilder (..)) where
 
 import Data.Constructor.Extract (ExtractedConstructor)
-import Data.Constructor.Extract.Class (ExtractedConstructor (fromExtractedCon))
+import Data.Constructor.Extract.Class (ExtractedConstructor (fromEC))
 import Data.List (singleton)
 import Language.Haskell.TH
 
@@ -16,8 +16,11 @@ class QBuilder a b where
 instance QBuilder a a where
     gen = pure
 
+instance (Quote m, m ~ Q) => QBuilder (Code m a) (TExp a) where
+    gen = examineCode
+
 instance (ExtractedConstructor a Dec) => QBuilder (Q a) [Dec] where
-    gen = fmap (singleton . fromExtractedCon)
+    gen = fmap (singleton . fromEC)
 
 -- TODO Does not work when using quotes
 -- instance QBuilder (Q a) a where
@@ -25,7 +28,7 @@ instance (Quote m, m ~ Q) => QBuilder (m a) a where
     gen = id
 
 instance (ExtractedConstructor a b) => QBuilder (Q a) b where
-    gen = fmap fromExtractedCon
+    gen = fmap fromEC
 
 instance (ExtractedConstructor a b) => QBuilder a b where
-    gen = pure . fromExtractedCon
+    gen = pure . fromEC

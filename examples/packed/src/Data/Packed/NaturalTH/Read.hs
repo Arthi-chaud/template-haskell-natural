@@ -33,7 +33,7 @@ genRead tyName = newFunc ("read" ++ TH.nameBase tyName) $ B.do
             addConstraint [t|R.Unpackable $(TH.varT tyVar)|]
         setResultType [t|R.PackedReader '[$(q resolvedType)] $(qCon r) $(q resolvedType)|]
 
-genReadLambda :: TH.Con -> SimpleExprDefinition
+genReadLambda :: TH.Con -> TH.Q TH.Exp
 genReadLambda con = B.do
     let (conName, conParamTypes) = getNameAndBangTypesFromCon con
         go :: [TH.BangType] -> [TH.Exp] -> TH.Q TH.Exp

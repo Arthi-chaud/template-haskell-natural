@@ -22,6 +22,7 @@ library
       Language.Haskell.TH.Natural.Syntax.Expr.Class
       Language.Haskell.TH.Natural.Syntax.Expr.Do
       Language.Haskell.TH.Natural.Syntax.Expr.Do.State
+      Language.Haskell.TH.Natural.Syntax.Expr.Do.Typed
       Language.Haskell.TH.Natural.Syntax.Expr.Do.Untyped
       Language.Haskell.TH.Natural.Syntax.Expr.Internal
       Language.Haskell.TH.Natural.Syntax.Expr.Simple
@@ -29,6 +30,8 @@ library
       Language.Haskell.TH.Natural.Syntax.Expr.Simple.Typed
       Language.Haskell.TH.Natural.Syntax.Expr.Simple.Untyped
       Language.Haskell.TH.Natural.Syntax.Expr.Typed.Builder
+      Language.Haskell.TH.Natural.Syntax.Expr.Typed.Class
+      Language.Haskell.TH.Natural.Syntax.Expr.Typed.Monad
       Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance
       Language.Haskell.TH.Natural.Syntax.Signature
@@ -73,6 +76,7 @@ test-suite unit
       CurrySpec
       Tuple
       TupleSpec
+      TypedSpec
       Paths_template_haskell_natural
   hs-source-dirs:
       test

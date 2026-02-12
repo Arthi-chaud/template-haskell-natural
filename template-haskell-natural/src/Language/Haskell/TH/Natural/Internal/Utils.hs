@@ -1,6 +1,6 @@
 module Language.Haskell.TH.Natural.Internal.Utils (conFieldCount) where
 
-import Data.Constructor.Extract (ExtractedConstructor (toExtractedCon))
+import Data.Constructor.Extract (ExtractedConstructor (toEC))
 import Data.List (find)
 import Language.Haskell.TH.Syntax
 import Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons
@@ -8,10 +8,10 @@ import Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons
 conFieldCount :: Name -> Q Int
 conFieldCount conName_ = do
     info <- reify conName_
-    case toExtractedCon info of
+    case toEC info of
         Just (MkDataConI n' _ pname) -> do
             parentInfo <- reify pname
-            case toExtractedCon parentInfo of
+            case toEC parentInfo of
                 Just (MkTyConI dec) -> return $ countFieldForCon dec n'
                 _ -> fail "Expected a type constructor"
         Nothing -> fail "Expected the name to be one of  a data constructor"

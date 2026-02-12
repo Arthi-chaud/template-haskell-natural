@@ -52,14 +52,14 @@ generateExtractedConInstance d@MkDataAndCon{..} opts =
         let
             body = NormalB $ applyArgs (ConE conName) fieldNames
          in
-            FunD 'fromExtractedCon [Clause [ConP (dataConstructorName d opts) [] conArgPatterns] body []]
+            FunD 'fromEC [Clause [ConP (dataConstructorName d opts) [] conArgPatterns] body []]
     --
     toDec =
         let
             body = NormalB $ ConE 'Just `AppE` applyArgs (ConE genConstructorName) fieldNames
          in
             FunD
-                'toExtractedCon
+                'toEC
                 [ Clause [ConP conName [] conArgPatterns] body []
                 , Clause [WildP] (NormalB $ ConE 'Nothing) []
                 ]

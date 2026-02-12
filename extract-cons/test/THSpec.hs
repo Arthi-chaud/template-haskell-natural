@@ -14,12 +14,12 @@ spec =
     describe "Convert Constructors" $ do
         describe "'from'ExtractedCon" $ do
             it "Convert MkNothing" $
-                fromExtractedCon MkNothing `shouldBe` (Nothing @(Maybe Int))
+                fromEC MkNothing `shouldBe` (Nothing @(Maybe Int))
             it "Convert MkJust" $
-                fromExtractedCon (MkJust 'a') `shouldBe` Just 'a'
+                fromEC (MkJust 'a') `shouldBe` Just 'a'
 
         describe "'to' ExtractedCon" $ do
             it "Convert Nothing" $
-                toExtractedCon (Nothing @(Maybe Int)) `shouldBe` Just MkNothing
+                toEC (Nothing @(Maybe Int)) `shouldBe` Just MkNothing
             it "Convert Just" $
-                toExtractedCon (Just 'a') `shouldBe` Just (MkJust 'a')
+                toEC (Just 'a') `shouldBe` Just (MkJust 'a')

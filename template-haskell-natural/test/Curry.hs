@@ -23,14 +23,14 @@ import Language.Haskell.TH.QBuilder
 --  \f a1 a2 -> f (a1, a2)
 -- @
 curryN :: Int -> Q Exp
-curryN n = newExpr $ E.do
+curryN n = gen $ newExpr $ E.do
     f <- arg
     args <- replicateM n arg
     returns $ f `AppE` TupE (fmap Just args)
 
 curryNSig :: Int -> Q Type
 curryNSig n = gen $ newSignature $ S.do
-    tupTys <- replicateM n $ liftB (fromExtractedCon <$> newTypeVar "a")
+    tupTys <- replicateM n $ liftB (fromEC <$> newTypeVar "a")
 
     fResType <- liftB $ newTypeVar "b"
     fSig <- liftB $ newSignature $ S.do

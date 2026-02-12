@@ -66,7 +66,7 @@ matchCon conName cmb = do
     (MkMBS conP mexp) <- liftB $ runBaseBuilder cmb (MkMBS (MkConP conName [] (TH.WildP <$ [0 .. fCount - 1])) Nothing)
     case mexp of
         Nothing -> B.fail "Match's Expression is missing"
-        Just e -> matches |>= TH.Match (fromExtractedCon conP) (TH.NormalB e) []
+        Just e -> matches |>= TH.Match (fromEC conP) (TH.NormalB e) []
 
 --
 
@@ -99,7 +99,7 @@ field fidx = \case
     NestedMatch conN patBuilder -> do
         fCount <- liftB $ conFieldCount conN
         (res, conP) <- liftB $ runBaseBuilder' (patBuilder fCount) (MkConP conN [] (TH.WildP <$ [0 .. fCount - 1]))
-        setFieldPattern fidx $ fromExtractedCon conP
+        setFieldPattern fidx $ fromEC conP
         return res
 
 type ConMatchBuilder = Builder ConMatchBuilderState

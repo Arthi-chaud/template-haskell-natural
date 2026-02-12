@@ -8,8 +8,7 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do.Untyped (
     DoExprBuilder,
 
     -- * State
-    DoExprBuilderState (..),
-    DoExprStep (..),
+    module Language.Haskell.TH.Natural.Syntax.Expr.Do.State,
 
     -- * Functions
     stmt,

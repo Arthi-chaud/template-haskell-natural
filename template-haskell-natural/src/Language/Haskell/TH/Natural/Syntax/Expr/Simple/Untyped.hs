@@ -10,7 +10,7 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Simple.Untyped (
     SimpleExprBuilder,
 
     -- * State
-    SimpleExprBuilderState (..),
+    module Language.Haskell.TH.Natural.Syntax.Expr.Simple.State,
 
     -- * Operations
     arg,
@@ -33,9 +33,10 @@ import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple.State
 import Language.Haskell.TH.QBuilder (gen)
+import Language.Haskell.TH.Syntax.ExtractedCons (LamE (..))
 import Prelude hiding ((>>=))
 
-type SimpleExprDefinition = TH.Q TH.Exp
+type SimpleExprDefinition = TH.Q LamE
 type SimpleExprBuilder = Builder SimpleExprBuilderState
 
 newExpr :: SimpleExprBuilder step Ready () -> SimpleExprDefinition
@@ -62,16 +63,13 @@ instance IsExprBuilder SimpleExprBuilderState where
     runExprBuilder b = do
         st <- runBaseBuilder b (MkEBS [] [] [] Nothing)
         (argsPat, decs) <- _compileSimpleExpr st
-        let lamOrId = case argsPat of
-                [] -> id
-                _ -> TH.LamE argsPat
         let letOrId = case decs of
                 [] -> id
                 _ -> TH.LetE decs
         resExp <- case st ^. returnedExp of
             Nothing -> Prelude.fail "Missing returned expression"
             Just e -> return e
-        return $ lamOrId $ letOrId resExp
+        return $ MkLamE argsPat $ letOrId resExp
 
 -- | Merges deconstructions of common expressions together, and returns a pair where:
 --

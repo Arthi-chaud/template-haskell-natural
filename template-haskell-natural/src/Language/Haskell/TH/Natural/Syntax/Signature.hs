@@ -27,7 +27,7 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
 
 import Control.Lens ((?=), (^.), (|>=))
 import Control.Lens.TH
-import Data.Constructor.Extract (ExtractedConstructor (fromExtractedCon))
+import Data.Constructor.Extract (ExtractedConstructor (fromEC))
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Internal.Name
@@ -51,7 +51,7 @@ data SignatureState = MkSBS
 makeLenses ''SignatureState
 
 instance QBuilder (SignatureBuilder step Ready ()) TH.Type where
-    gen = fmap fromExtractedCon . newSignature
+    gen = fmap fromEC . newSignature
 
 newSignature :: SignatureBuilder step Ready () -> SignatureDefinition
 newSignature builder = do

@@ -51,7 +51,7 @@ type FuncBuilder a = ConstBuilder FuncBuilderState a
 newFunc :: String -> FuncBuilder () -> FuncDefinition
 newFunc fName builder = do
     MkFBS{..} <- runBaseBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
-    return ((TH.PragmaD <$> _pragmas) ++ (fromExtractedCon <$> maybeToList _signature) ++ [fromExtractedCon _dec])
+    return ((TH.PragmaD <$> _pragmas) ++ (fromEC <$> maybeToList _signature) ++ [fromEC _dec])
 
 setSignature :: (QBuilder a TH.Type) => a -> FuncBuilder ()
 setSignature sigBuilder = do

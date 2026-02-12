@@ -54,7 +54,7 @@ genCase tyName = do
                                         (getField '(,,) 2 tpl)
                                 returns $ case_ tag $ B.do
                                     forM_ ([0 ..] `zip` caseReaders) $ \(i, caseReader) ->
-                                        matchConst (litP $ IntegerL i) [|runPackedReader $(q caseReader) $(q packed1) $(q l1)|]
+                                        matchConst (LitP $ IntegerL i) [|runPackedReader $(q caseReader) $(q packed1) $(q l1)|]
                                     matchWild [|Prelude.fail "Bad Tag"|]
                          )
                     |]

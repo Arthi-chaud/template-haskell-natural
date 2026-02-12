@@ -8,7 +8,6 @@ import Language.Haskell.TH
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Class
 import qualified Language.Haskell.TH.Natural.Syntax.Class as C
-import Language.Haskell.TH.Natural.Syntax.Common (addBody')
 import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import qualified Language.Haskell.TH.Natural.Syntax.Expr.Simple as E
@@ -43,7 +42,7 @@ generateTupleInstance element size = gen $ newInstance (mkName $ "Tuple" ++ elem
         Prelude.fail
             "Field index is larger than tuple size"
     tupTys <- replicateM size $ liftB $ newTypeVar "t"
-    addInstanceArg $ foldl AppT (TupleT size) (fromExtractedCon <$> tupTys)
+    addInstanceArg $ foldl AppT (TupleT size) (fromEC <$> tupTys)
     addInstanceArg (tupTys !! (element - 1))
 
     addBody' $ newFunc ("_" ++ show element) $ bodyFromExp $ newExpr $ E.do
