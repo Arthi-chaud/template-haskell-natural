@@ -8,7 +8,6 @@ import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Datatype
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Case as M
-import Language.Haskell.TH.Natural.Syntax.Expr.Base
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import Language.Haskell.TH.Natural.Syntax.Func (bodyFromExp, newFunc)
 import Language.Haskell.TH.Natural.Syntax.Instance

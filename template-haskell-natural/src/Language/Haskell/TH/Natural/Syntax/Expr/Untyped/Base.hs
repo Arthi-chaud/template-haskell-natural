@@ -1,4 +1,4 @@
-module Language.Haskell.TH.Natural.Syntax.Expr.Base (apply) where
+module Language.Haskell.TH.Natural.Syntax.Expr.Untyped.Base (apply) where
 
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.QBuilder

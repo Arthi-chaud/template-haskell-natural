@@ -11,7 +11,6 @@ import Data.Packed.TH.Utils
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
-import Language.Haskell.TH.Natural.Syntax.Expr.Base
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import Language.Haskell.TH.Natural.Syntax.Func
 import Language.Haskell.TH.Natural.Syntax.Signature

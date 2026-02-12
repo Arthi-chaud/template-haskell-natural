@@ -17,7 +17,7 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Do.Untyped (
     bind_,
 
     -- * Reexport
-    module Language.Haskell.TH.Natural.Syntax.Expr.Class,
+    module Language.Haskell.TH.Natural.Syntax.Expr.Untyped,
     module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
@@ -27,9 +27,9 @@ import Data.Bifunctor
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
-import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Do.State
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
+import Language.Haskell.TH.Natural.Syntax.Expr.Untyped
 import Language.Haskell.TH.QBuilder
 import Language.Haskell.TH.Syntax (ModName (..), nameBase)
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (expr)

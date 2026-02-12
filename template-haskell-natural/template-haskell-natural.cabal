@@ -18,8 +18,6 @@ library
       Language.Haskell.TH.Natural.Syntax.Case
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common
-      Language.Haskell.TH.Natural.Syntax.Expr.Base
-      Language.Haskell.TH.Natural.Syntax.Expr.Class
       Language.Haskell.TH.Natural.Syntax.Expr.Do
       Language.Haskell.TH.Natural.Syntax.Expr.Do.State
       Language.Haskell.TH.Natural.Syntax.Expr.Do.Typed
@@ -29,9 +27,13 @@ library
       Language.Haskell.TH.Natural.Syntax.Expr.Simple.State
       Language.Haskell.TH.Natural.Syntax.Expr.Simple.Typed
       Language.Haskell.TH.Natural.Syntax.Expr.Simple.Untyped
+      Language.Haskell.TH.Natural.Syntax.Expr.Typed
       Language.Haskell.TH.Natural.Syntax.Expr.Typed.Builder
       Language.Haskell.TH.Natural.Syntax.Expr.Typed.Class
       Language.Haskell.TH.Natural.Syntax.Expr.Typed.Monad
+      Language.Haskell.TH.Natural.Syntax.Expr.Untyped
+      Language.Haskell.TH.Natural.Syntax.Expr.Untyped.Base
+      Language.Haskell.TH.Natural.Syntax.Expr.Untyped.Class
       Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance
       Language.Haskell.TH.Natural.Syntax.Signature

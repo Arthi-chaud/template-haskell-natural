@@ -18,14 +18,13 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Typed.Class (
     letBind_,
 ) where
 
-import Data.Constructor.Extract.Class (ExtractedConstructor (fromEC))
-import Language.Haskell.TH (TExp (unType))
+import Data.Constructor.Extract.Class
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder as B
-import Language.Haskell.TH.Natural.Syntax.Expr.Class (Definition, IsExprBuilder, runExprBuilder)
-import qualified Language.Haskell.TH.Natural.Syntax.Expr.Class as Untyped
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.Natural.Syntax.Expr.Typed.Builder
+import Language.Haskell.TH.Natural.Syntax.Expr.Untyped (Definition, IsExprBuilder, runExprBuilder)
+import qualified Language.Haskell.TH.Natural.Syntax.Expr.Untyped as Untyped
 import Language.Haskell.TH.QBuilder
 import qualified Language.Haskell.TH.Syntax as TH
 
@@ -38,7 +37,7 @@ instance (IsExprBuilder st, Definition st ~ TH.Q a, ExtractedConstructor a TH.Ex
     runTypedExprBuilder (MkTEB b) = TH.TExp . fromEC <$> runExprBuilder b
 
 -- | Alias to 'runTypedExprBuilder'
-genExpr :: (IsExprBuilder st, Definition st ~ TH.Q a, ExtractedConstructor a TH.Exp) => TypedExprBuilder st '[] args (Returns a) () -> TH.Q (TExp (ExprType args (Returns a)))
+genExpr :: (IsExprBuilder st, Definition st ~ TH.Q a, ExtractedConstructor a TH.Exp) => TypedExprBuilder st '[] args (Returns a) () -> TH.Q (TH.TExp (ExprType args (Returns a)))
 genExpr = runTypedExprBuilder
 
 addDeconstruct :: (IsExprBuilder st) => Deconstruct -> TypedExprBuilder st args args Unknown ()
@@ -56,7 +55,7 @@ returns ::
     (QBuilder b (TH.TExp a)) =>
     b -> TypedExprBuilder st args args (Returns a) ()
 returns b = unsafeUntyped $ B.do
-    e <- unType <$> liftB (gen @b @(TH.TExp a) b)
+    e <- TH.unType <$> liftB (gen @b @(TH.TExp a) b)
     Untyped.returns e
 
 strictLetBind :: (IsExprBuilder st, QBuilder b (TH.TExp a)) => b -> TypedExprBuilder st args args Unknown (TH.TExp a)
@@ -67,5 +66,5 @@ letBind = letBind_ False
 
 letBind_ :: forall a b st args. (IsExprBuilder st, QBuilder b (TH.TExp a)) => Bool -> b -> TypedExprBuilder st args args Unknown (TH.TExp a)
 letBind_ isStrict b = MkTEB $ B.do
-    e <- unType <$> liftB (gen @b @(TH.TExp a) b)
+    e <- TH.unType <$> liftB (gen @b @(TH.TExp a) b)
     unsafeCastStep (TH.TExp <$> Untyped.letBind_ isStrict e)

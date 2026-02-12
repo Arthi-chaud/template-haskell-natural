@@ -16,7 +16,7 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Simple.Untyped (
     arg,
 
     -- * Reexport
-    module Language.Haskell.TH.Natural.Syntax.Expr.Class,
+    module Language.Haskell.TH.Natural.Syntax.Expr.Untyped,
     module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
 
@@ -29,9 +29,9 @@ import Data.Maybe
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Natural.Syntax.Builder hiding (fail, (>>=))
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
-import Language.Haskell.TH.Natural.Syntax.Expr.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Internal
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple.State
+import Language.Haskell.TH.Natural.Syntax.Expr.Untyped
 import Language.Haskell.TH.QBuilder (gen)
 import Language.Haskell.TH.Syntax.ExtractedCons (LamE (..))
 import Prelude hiding ((>>=))

@@ -8,11 +8,11 @@ import Language.Haskell.TH.Natural.Syntax.Expr.Simple.Typed as T
 import Language.Haskell.TH.Quotable
 import Test.Hspec
 
-mkSimpleAdd :: SimpleTypedExprDefinition (Int -> Int -> Int)
-mkSimpleAdd = T.newExpr $ T.do
-    left <- arg
-    right <- arg
-    returns [||$$(qT left) + $$(qT right)||]
+mkTypedE :: SimpleTypedExprDefinition (Int -> String -> String)
+mkTypedE = T.newExpr $ T.do
+    count <- arg
+    str <- arg
+    returns [||concat $ replicate $$(qT count) $$(qT str)||]
 
 spec :: Spec
 spec = pure ()

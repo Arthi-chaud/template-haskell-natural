@@ -3,7 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Language.Haskell.TH.Natural.Syntax.Expr.Class (
+module Language.Haskell.TH.Natural.Syntax.Expr.Untyped.Class (
     IsExprBuilder (..),
 
     -- * Let
