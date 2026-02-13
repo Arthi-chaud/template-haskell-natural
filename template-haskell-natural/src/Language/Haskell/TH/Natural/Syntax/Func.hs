@@ -44,16 +44,16 @@ data FuncBuilderState = MkFBS
 
 makeLenses ''FuncBuilderState
 
-type FuncBuilder a = ConstBuilder FuncBuilderState a
+type FuncBuilder = Builder FuncBuilderState
 
 -- TODO Should not be ready if 0 clause
 
-newFunc :: String -> FuncBuilder () -> FuncDefinition
+newFunc :: String -> FuncBuilder step Ready () -> FuncDefinition
 newFunc fName builder = do
     MkFBS{..} <- runBaseBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
     return ((TH.PragmaD <$> _pragmas) ++ (fromEC <$> maybeToList _signature) ++ [fromEC _dec])
 
-setSignature :: (GenType a) => a -> FuncBuilder ()
+setSignature :: (GenType a) => a -> FuncBuilder step step ()
 setSignature sigBuilder = do
     sig <- liftB $ genTy sigBuilder
     fName <- view (dec . name)
@@ -61,23 +61,23 @@ setSignature sigBuilder = do
     return ()
 
 -- | Add a clause to the function
-addClause :: Clause -> FuncBuilder ()
-addClause c = (dec . clauses) |>= c
+addClause :: Clause -> FuncBuilder step Ready ()
+addClause c = impure $ (dec . clauses) |>= c
 
 -- | Uses an Exp as the body of a function
 --
 -- Warning: This operation is destructive, and replaces all previous clauses set using 'addClause'
-bodyFromExp :: (GenExpr b) => b -> FuncBuilder ()
-bodyFromExp qe = do
+bodyFromExp :: (GenExpr b) => b -> FuncBuilder step Ready ()
+bodyFromExp qe = impure $ do
     e <- liftB $ genExpr qe
     (dec . clauses) .= [TH.Clause [] (TH.NormalB e) []]
 
 -- | Add an inline pragma to the function
-inline :: FuncBuilder ()
+inline :: FuncBuilder step step ()
 inline = setInline TH.Inline TH.FunLike TH.AllPhases
 
 -- | Sets an inline pragma to the function
-setInline :: TH.Inline -> TH.RuleMatch -> TH.Phases -> FuncBuilder ()
+setInline :: TH.Inline -> TH.RuleMatch -> TH.Phases -> FuncBuilder step step ()
 setInline i rm phs = do
     fName <- view (dec . name)
     modify $ over pragmas $ filter $ \case
@@ -86,5 +86,5 @@ setInline i rm phs = do
     let newInlineP = TH.InlineP fName i rm phs
     pragmas <|= newInlineP
 
-addPragma :: TH.Pragma -> FuncBuilder ()
+addPragma :: TH.Pragma -> FuncBuilder step step ()
 addPragma p = pragmas <|= p
