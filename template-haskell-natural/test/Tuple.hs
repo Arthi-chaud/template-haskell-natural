@@ -21,8 +21,8 @@ generateTupleClass n = genDecs $ newClass ("Tuple" ++ n') $ B.do
     when (n <= 0) $
         Prelude.fail $
             "Non-Positive Size: " ++ n'
-    t <- liftB $ newTypeVar "t"
-    r <- liftB $ newTypeVar "r"
+    t <- newTypeVar "t"
+    r <- newTypeVar "r"
     addTypeVar t BndrReq Nothing
     addTypeVar r BndrReq Nothing
     addFunDep [t] [r]
@@ -37,7 +37,7 @@ generateTupleInstance element size = genDecs $ newInstance (mkName $ "Tuple" ++ 
     when (element > size) $
         Prelude.fail
             "Field index is larger than tuple size"
-    tupTys <- replicateM size $ liftB $ newTypeVar "t"
+    tupTys <- replicateM size $ newTypeVar "t"
     addInstanceArg $ foldl AppT (TupleT size) (fromEC <$> tupTys)
     addInstanceArg (tupTys !! (element - 1))
 

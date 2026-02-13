@@ -18,10 +18,10 @@ import Control.Lens
 import Language.Haskell.TH (Q)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Gen
-import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Common
+import Language.Haskell.TH.Natural.Syntax.Name
 import Language.Haskell.TH.Syntax.ExtractedCons
 
 type InstanceDefinition = Q InstanceD

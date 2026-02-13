@@ -31,10 +31,10 @@ import Data.Constructor.Extract
 import Language.Haskell.TH (Q, Type (AppT, ArrowT))
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Gen
-import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
+import Language.Haskell.TH.Natural.Syntax.Name
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline, tyVarBndr)
 
 type SignatureDefinition = Q ForallT
@@ -62,9 +62,10 @@ newSignature builder = do
     let funcType = foldr (\param -> ((ArrowT `AppT` param) `AppT`)) resTy _params
     return $ MkForallT _tyVarBndr _constraints funcType
 
--- | Adds the given type variable to the _forall_ list.
---
--- Using this function should comply with the 'forall-or-nothing' rule (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/explicit_forall.html#the-forall-or-nothing-rule)
+{- | Adds the given type variable to the _forall_ list.
+
+Using this function should comply with the 'forall-or-nothing' rule (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/explicit_forall.html#the-forall-or-nothing-rule)
+-}
 addToForall :: TypeVarName -> SignatureBuilder step step ()
 addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (tyVar ^. name) TH.SpecifiedSpec
 
@@ -75,9 +76,10 @@ addConstraint tyBuilder = do
     unsafeWithState $
         constraints |>= constr
 
--- | Set the type as the nth parameter of the function's signature
---
--- (n being the number of time 'addParam' was called)
+{- | Set the type as the nth parameter of the function's signature
+
+(n being the number of time 'addParam' was called)
+-}
 addParam :: (GenType a) => a -> SignatureBuilder step step ()
 addParam tyBuilder = do
     param <- liftB $ genTy tyBuilder

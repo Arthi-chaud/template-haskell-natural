@@ -9,9 +9,10 @@ import Control.Monad.State (MonadState (..), StateT (..), execStateT, modify)
 import qualified Control.Monad.State
 import qualified Language.Haskell.TH as TH
 
--- | A computation that builds an object, the state
---
--- A graded state monad
+{- | A computation that builds an object, the state
+
+A graded state monad
+-}
 newtype BaseBuilder m s (prev :: k) (next :: k) a
     = MkB {unB :: StateT s m a}
     deriving (Functor)
@@ -63,9 +64,10 @@ liftB = MkB . Control.Monad.State.lift
 impure :: BaseBuilder m s step step a -> BaseBuilder m s step next a
 impure = unsafeCastStep
 
--- | Allows accessing and modifying the state.
---
--- Using this to modify the state breaks the security provided by the type-level tracking of state.
+{- | Allows accessing and modifying the state.
+
+Using this to modify the state breaks the security provided by the type-level tracking of state.
+-}
 unsafeWithState :: StateT s m a -> BaseBuilder m s prev curr a
 unsafeWithState = MkB
 

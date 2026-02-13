@@ -11,7 +11,6 @@ build-type:     Simple
 library
   exposed-modules:
       Language.Haskell.TH.Gen
-      Language.Haskell.TH.Natural.Internal.Name
       Language.Haskell.TH.Natural.Internal.Utils
       Language.Haskell.TH.Natural.Syntax.Builder
       Language.Haskell.TH.Natural.Syntax.Builder.Internal
@@ -37,6 +36,7 @@ library
       Language.Haskell.TH.Natural.Syntax.Expr.Untyped.Class
       Language.Haskell.TH.Natural.Syntax.Func
       Language.Haskell.TH.Natural.Syntax.Instance
+      Language.Haskell.TH.Natural.Syntax.Name
       Language.Haskell.TH.Natural.Syntax.Signature
       Language.Haskell.TH.Quotable
   other-modules:

@@ -10,12 +10,12 @@ import Data.Packed.Needs
 import Data.Packed.TH.Utils (getNameAndBangTypesFromCon, resolveAppliedType, sanitizeConName)
 import Data.Word (Word8)
 import qualified Language.Haskell.TH as TH
-import Language.Haskell.TH.Natural.Internal.Name
 import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Case (body, case_, field, matchCon, var)
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import Language.Haskell.TH.Natural.Syntax.Func
+import Language.Haskell.TH.Natural.Syntax.Name
 import Language.Haskell.TH.Natural.Syntax.Signature
 import Language.Haskell.TH.Quotable
 
@@ -37,8 +37,8 @@ genWrite tyName = newFunc ("write" ++ TH.nameBase tyName) $ B.do
                         body $ newExpr $ returns $ apply (TH.VarE $ conWriteFName conName) fields
     writeSig = newSignature $ B.do
         (resolvedType, typeVariables) <- liftB $ resolveAppliedType tyName
-        r <- liftB $ newTypeVar "r"
-        t <- liftB $ newTypeVar "t"
+        r <- newTypeVar "r"
+        t <- newTypeVar "t"
         forM_ typeVariables $ \tyVar ->
             addConstraint [t|P.Packable $(TH.varT tyVar)|]
         addParam resolvedType
@@ -63,8 +63,8 @@ genConWrite tyName con tag = newFunc (TH.nameBase $ conWriteFName conName) $ B.d
                 args
     conWriteSig = newSignature $ B.do
         (resolvedType, typeVariables) <- liftB $ resolveAppliedType tyName
-        r <- liftB $ newTypeVar "r"
-        t <- liftB $ newTypeVar "t"
+        r <- newTypeVar "r"
+        t <- newTypeVar "t"
         forM_ typeVariables $ \tyVar -> B.do
             addConstraint [t|Packable $(TH.varT tyVar)|]
         forM_ conParamTypes $ \(_, argTy) -> B.do

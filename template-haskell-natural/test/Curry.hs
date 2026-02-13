@@ -30,13 +30,12 @@ curryN n = genExpr $ newExpr $ E.do
 
 curryNSig :: Int -> Q Type
 curryNSig n = genTy $ newSignature $ S.do
-    tupTys <- replicateM n $ liftB (fromEC <$> newTypeVar "a")
+    tupTys <- replicateM n (fromEC <$> newTypeVar "a")
 
-    fResType <- liftB $ newTypeVar "b"
-    fSig <- liftB $ newSignature $ S.do
+    fResType <- newTypeVar "b"
+    addParam $ newSignature $ S.do
         addParam $ foldl AppT (TupleT n) tupTys
         setResultType fResType
-    addParam fSig
 
     forM_ tupTys addParam
     setResultType fResType

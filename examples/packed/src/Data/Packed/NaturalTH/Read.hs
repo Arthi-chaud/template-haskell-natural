@@ -27,7 +27,7 @@ genRead tyName = newFunc ("read" ++ TH.nameBase tyName) $ B.do
   where
     readSig = newSignature $ B.do
         (resolvedType, typeVariables) <- liftB $ resolveAppliedType tyName
-        r <- liftB $ newTypeVar "r"
+        r <- newTypeVar "r"
         forM_ typeVariables $ \tyVar ->
             addConstraint [t|R.Unpackable $(TH.varT tyVar)|]
         setResultType [t|R.PackedReader '[$(q resolvedType)] $(qEC r) $(q resolvedType)|]

@@ -62,8 +62,8 @@ genCase tyName = do
     caseSignature = Sig.do
         (sourceType, _) <- liftB $ resolveAppliedType tyName
         branchesTypes <- liftB $ getBranchesTyList tyName []
-        r <- qEC <$> liftB (newTypeVar "r")
-        b <- qEC <$> liftB (newTypeVar "b")
+        r <- qEC <$> newTypeVar "r"
+        b <- qEC <$> newTypeVar "b"
         forM_ branchesTypes $ \branchType -> Sig.do
             addParam $
                 let branchTypeList = q $ foldr (\a rest -> ConT '(:) `AppT` a `AppT` rest) (ConT '[]) branchType

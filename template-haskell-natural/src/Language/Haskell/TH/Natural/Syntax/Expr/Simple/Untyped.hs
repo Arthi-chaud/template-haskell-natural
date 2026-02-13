@@ -71,10 +71,11 @@ instance IsExprBuilder SimpleExprBuilderState where
             Just e -> return e
         return $ MkLamE argsPat $ letOrId resExp
 
--- | Merges deconstructions of common expressions together, and returns a pair where:
---
--- - The first element is the patterns for the args (if any), deconstructed or not according to the decons
--- - The list of declarations (i.e. lets and deconstructs) to pass to 'LetE'
+{- | Merges deconstructions of common expressions together, and returns a pair where:
+
+- The first element is the patterns for the args (if any), deconstructed or not according to the decons
+- The list of declarations (i.e. lets and deconstructs) to pass to 'LetE'
+-}
 _compileSimpleExpr :: (MonadFail m) => SimpleExprBuilderState -> m ([TH.Pat], [TH.Dec])
 _compileSimpleExpr st = do
     mergedDecons <- mergeDeconstructs $ st ^. deconstructs
