@@ -76,8 +76,8 @@ test-suite unit
   other-modules:
       Curry
       CurrySpec
-      PatSyn
-      PatSynSpec
+      GetField
+      GetFieldSpec
       Tuple
       TupleSpec
       TypedSpec
