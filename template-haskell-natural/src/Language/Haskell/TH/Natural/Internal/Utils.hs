@@ -5,16 +5,18 @@ import Data.List (find)
 import Language.Haskell.TH.Syntax
 import Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons
 
+-- | Get the number of fields in a constructor or a patternsynonym
 conFieldCount :: Name -> Q Int
 conFieldCount conName_ = do
     info <- reify conName_
-    case toEC info of
-        Just (MkDataConI n' _ pname) -> do
+    case info of
+        (DataConI n' _ pname) -> do
             parentInfo <- reify pname
             case toEC parentInfo of
                 Just (MkTyConI dec) -> return $ countFieldForCon dec n'
                 _ -> fail "Expected a type constructor"
-        Nothing -> fail "Expected the name to be one of  a data constructor"
+        (PatSynI _ ty) -> return $ countArgsForTy ty
+        _ -> fail "Expected the name to be one of  a data constructor"
   where
     countFieldForCon dec n = case dec of
         DataD _ _ _ _ cons _ -> maybe 0 snd $ find fst $ fmap (countConArg conName_) cons
@@ -27,3 +29,11 @@ conFieldCount conName_ = do
         ForallC _ _ con -> countConArg n con
         GadtC ns args _ -> (n `elem` ns, length args)
         RecGadtC ns args _ -> (n `elem` ns, length args)
+    countArgsForTy = \case
+        ForallT _ _ ty -> countArgsForTy ty
+        ForallVisT _ ty -> countArgsForTy ty
+        AppT (AppT ArrowT _) b ->
+            1 + case b of
+                (AppT (AppT ArrowT _) _) -> countArgsForTy b
+                _ -> 0
+        _ -> 0
