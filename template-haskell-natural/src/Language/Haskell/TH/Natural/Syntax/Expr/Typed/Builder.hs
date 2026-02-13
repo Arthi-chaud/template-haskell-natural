@@ -8,9 +8,9 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Typed.Builder (
     Returns (..),
 
     -- * Util type families
-    AddArg,
+    (:>),
     (:++:),
-    ExprType,
+    (:~>),
 ) where
 
 import Data.Kind as K
@@ -18,17 +18,20 @@ import Language.Haskell.TH.Natural.Syntax.Builder
 
 data Returns a = Unknown | Returns a
 
-type family AddArg args a where
-    AddArg '[] a = '[a]
-    AddArg (arg ': args) a = arg ': AddArg args a
+-- | Adds an argument at the end of an args list (snoc)
+type family args :> arg where
+    '[] :> a = '[a]
+    (arg ': args) :> a = arg ': (args :> a)
 
+-- | Merges two args lists
 type family args0 :++: args1 where
     '[] :++: args1 = args1
     (arg ': args0) :++: args1 = arg ': args0 :++: args1
 
-type family ExprType args res where
-    ExprType '[] (Returns a) = a
-    ExprType (arg ': args) (Returns a) = arg -> ExprType args (Returns a)
+-- | Builds the final arrow type from a list of args and a 'Returns'
+type family args :~> res where
+    '[] :~> (Returns a) = a
+    (arg ': args) :~> (Returns a) = arg -> (args :~> Returns a)
 
 newtype TypedExprBuilder s (prevArgs :: [K.Type]) (args :: [K.Type]) (res :: k) a = MkTEB {unTEB :: ConstBuilder s a}
 

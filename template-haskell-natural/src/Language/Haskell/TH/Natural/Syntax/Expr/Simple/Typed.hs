@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeOperators #-}
+
 module Language.Haskell.TH.Natural.Syntax.Expr.Simple.Typed (
     SimpleTypedExprDefinition,
     SimpleTypedExprBuilder,
@@ -19,8 +21,8 @@ type SimpleTypedExprDefinition a = TH.Q (TH.TExp a)
 
 type SimpleTypedExprBuilder = TypedExprBuilder SimpleExprBuilderState
 
-newExpr :: SimpleTypedExprBuilder '[] args (Returns a) () -> SimpleTypedExprDefinition (ExprType args (Returns a))
+newExpr :: SimpleTypedExprBuilder '[] args (Returns a) () -> SimpleTypedExprDefinition (args :~> Returns a)
 newExpr = runTypedExprBuilder
 
-arg :: SimpleTypedExprBuilder args (AddArg args a) Unknown (TH.TExp a)
+arg :: SimpleTypedExprBuilder args (args :> a) Unknown (TH.TExp a)
 arg = unsafeUntyped $ fmap TH.TExp Untyped.arg

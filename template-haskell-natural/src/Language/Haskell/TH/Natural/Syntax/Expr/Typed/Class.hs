@@ -31,7 +31,7 @@ import qualified Language.Haskell.TH.Syntax as TH
 class IsTypedExprBuilder st where
     runTypedExprBuilder ::
         TypedExprBuilder st '[] args (Returns a) () ->
-        TH.Q (TH.TExp (ExprType args (Returns a)))
+        TH.Q (TH.TExp (args :~> Returns a))
 
 instance (IsExprBuilder st, Definition st ~ TH.Q a, ExtractedConstructor a TH.Exp) => IsTypedExprBuilder st where
     runTypedExprBuilder (MkTEB b) = TH.TExp . fromEC <$> runExprBuilder b
@@ -39,7 +39,7 @@ instance (IsExprBuilder st, Definition st ~ TH.Q a, ExtractedConstructor a TH.Ex
 -- TODO Instance of GenTexp
 
 -- | Alias to 'runTypedExprBuilder'
-genExpr :: (IsExprBuilder st, Definition st ~ TH.Q a, ExtractedConstructor a TH.Exp) => TypedExprBuilder st '[] args (Returns a) () -> TH.Q (TH.TExp (ExprType args (Returns a)))
+genExpr :: (IsExprBuilder st, Definition st ~ TH.Q a, ExtractedConstructor a TH.Exp) => TypedExprBuilder st '[] args (Returns a) () -> TH.Q (TH.TExp (args :~> Returns a))
 genExpr = runTypedExprBuilder
 
 addDeconstruct :: (IsExprBuilder st) => Deconstruct -> TypedExprBuilder st args args Unknown ()
