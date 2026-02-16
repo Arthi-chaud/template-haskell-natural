@@ -11,6 +11,11 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Internal (
     deconstructToPat,
     mergeDeconstructs,
     mergeDeconstruct,
+    --- * Lenses
+    conName,
+    fieldPatterns,
+    src,
+    totalFieldCount,
 ) where
 
 import Control.Lens

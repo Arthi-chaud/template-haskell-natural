@@ -11,6 +11,10 @@ module Language.Haskell.TH.Natural.Syntax.TypeSynonym (
     addTypeVar,
     addTypeVar',
     returns,
+
+    -- * Lenses
+    resType,
+    tyVars,
 ) where
 
 import Control.Lens

@@ -65,19 +65,19 @@ getField'' ::
     -- | Modify the created pattern (e.g. add BangP or type annotation)
     (TH.Pat -> TH.Q TH.Pat) ->
     Builder st step Empty TH.Exp
-getField'' conName idx qExpr fPat = unsafeCastStep $ do
+getField'' cName idx qExpr fPat = unsafeCastStep $ do
     expr <- liftB $ genExpr qExpr
     patVarName <- liftB $ TH.newName "pat"
     pat <- liftB $ genPat $ fPat $ TH.VarP patVarName
-    fieldCount <- liftB $ either pure conFieldCount conName
-    addDeconstruct $ MkDec conName [(idx, pat)] expr fieldCount
+    fieldCount <- liftB $ either pure conFieldCount cName
+    addDeconstruct $ MkDec cName [(idx, pat)] expr fieldCount
     return $ TH.VarE patVarName
 
 getField :: (IsExprBuilder st, GenExpr b) => TH.Name -> Int -> b -> Builder st step Empty TH.Exp
-getField conName idx qExpr = getField'' (Right conName) idx qExpr pure
+getField cName idx qExpr = getField'' (Right cName) idx qExpr pure
 
 getField' :: (IsExprBuilder st, GenExpr b) => TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> Builder st step Empty TH.Exp
-getField' conName = getField'' (Right conName)
+getField' cName = getField'' (Right cName)
 
 getTupleField :: (IsExprBuilder st, GenExpr b) => Int -> Int -> b -> Builder st step Empty TH.Exp
 getTupleField size idx qExpr = getField'' (Left size) idx qExpr pure

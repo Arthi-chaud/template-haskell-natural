@@ -9,16 +9,18 @@ module Language.Haskell.TH.Natural.Syntax.Signature (
 
     -- * State
     SignatureState (..),
-    tyVarBndr,
-    constraints,
-    params,
-    result,
 
     -- * Functions
     addToForall,
     addConstraint,
     addParam,
     setResultType,
+
+    -- * Lenses
+    tyVarBndr,
+    constraints,
+    params,
+    result,
 
     -- * Re-export
     newTypeVar,
@@ -62,10 +64,9 @@ newSignature builder = do
     let funcType = foldr (\param -> ((ArrowT `AppT` param) `AppT`)) resTy _params
     return $ MkForallT _tyVarBndr _constraints funcType
 
-{- | Adds the given type variable to the _forall_ list.
-
-Using this function should comply with the 'forall-or-nothing' rule (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/explicit_forall.html#the-forall-or-nothing-rule)
--}
+-- | Adds the given type variable to the _forall_ list.
+--
+-- Using this function should comply with the 'forall-or-nothing' rule (https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/explicit_forall.html#the-forall-or-nothing-rule)
 addToForall :: TypeVarName -> SignatureBuilder step step ()
 addToForall tyVar = unsafeWithState $ tyVarBndr |>= TH.PlainTV (tyVar ^. name) TH.SpecifiedSpec
 
@@ -76,10 +77,9 @@ addConstraint tyBuilder = do
     unsafeWithState $
         constraints |>= constr
 
-{- | Set the type as the nth parameter of the function's signature
-
-(n being the number of time 'addParam' was called)
--}
+-- | Set the type as the nth parameter of the function's signature
+--
+-- (n being the number of time 'addParam' was called)
 addParam :: (GenType a) => a -> SignatureBuilder step step ()
 addParam tyBuilder = do
     param <- liftB $ genTy tyBuilder

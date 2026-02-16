@@ -19,6 +19,11 @@ module Language.Haskell.TH.Natural.Syntax.Func (
     setInline,
     addPragma,
 
+    -- * Lenses
+    pragmas,
+    dec,
+    signature,
+
     -- * Reexports
     module Language.Haskell.TH.Natural.Syntax.Builder.Monad,
 ) where
@@ -64,10 +69,9 @@ setSignature sigBuilder = do
 addClause :: Clause -> FuncBuilder step Ready ()
 addClause c = impure $ (dec . clauses) |>= c
 
-{- | Uses an Exp as the body of a function
-
-Warning: This operation is destructive, and replaces all previous clauses set using 'addClause'
--}
+-- | Uses an Exp as the body of a function
+--
+-- Warning: This operation is destructive, and replaces all previous clauses set using 'addClause'
 bodyFromExp :: (GenExpr b) => b -> FuncBuilder step Ready ()
 bodyFromExp qe = impure $ do
     e <- liftB $ genExpr qe
