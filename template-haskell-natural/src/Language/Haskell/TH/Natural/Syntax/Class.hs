@@ -8,6 +8,7 @@ module Language.Haskell.TH.Natural.Syntax.Class (
 
     -- * Functions
     addTypeVar,
+    addTypeVar',
     addFunDep,
     addSignature,
 
@@ -37,8 +38,11 @@ newClass className next = runBaseBuilder next class_
     class_ = MkClassD [] (mkName className) [] [] []
 
 -- | Add the given 'TypeVar' to the class' arguments
-addTypeVar :: TypeVarName -> BndrVis -> Maybe TH.Kind -> ClassBuilder ()
-addTypeVar tyN vis mkind =
+addTypeVar :: TypeVarName -> ClassBuilder ()
+addTypeVar tyN = addTypeVar' tyN BndrReq Nothing
+
+addTypeVar' :: TypeVarName -> BndrVis -> Maybe TH.Kind -> ClassBuilder ()
+addTypeVar' tyN vis mkind =
     tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
   where
     n = tyN ^. name

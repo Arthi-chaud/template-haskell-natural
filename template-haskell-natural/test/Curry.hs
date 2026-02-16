@@ -6,7 +6,6 @@ import Control.Monad as M
 import Data.Constructor.Extract
 import Language.Haskell.TH
 import Language.Haskell.TH.Gen
-import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
 import qualified Language.Haskell.TH.Natural.Syntax.Expr.Simple as E
 import Language.Haskell.TH.Natural.Syntax.Func (bodyFromExp, newFunc, setSignature)

@@ -6,7 +6,6 @@ import Control.Monad
 import Data.Constructor.Extract
 import Language.Haskell.TH
 import Language.Haskell.TH.Gen
-import Language.Haskell.TH.Natural.Syntax.Builder
 import qualified Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Class
 import Language.Haskell.TH.Natural.Syntax.Expr.Simple
@@ -23,8 +22,8 @@ generateTupleClass n = genDecs $ newClass ("Tuple" ++ n') $ B.do
             "Non-Positive Size: " ++ n'
     t <- newTypeVar "t"
     r <- newTypeVar "r"
-    addTypeVar t BndrReq Nothing
-    addTypeVar r BndrReq Nothing
+    addTypeVar t
+    addTypeVar r
     addFunDep [t] [r]
     addSignature ("_" ++ n') $ B.do
         addParam t
