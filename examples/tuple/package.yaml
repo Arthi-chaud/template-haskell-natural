@@ -1,0 +1,42 @@
+name: tuple-th-natural
+version: 1.0.0.0
+
+description: "Partial reimplementation of github.com/DanielSchuessler/tuple-th"
+
+default-extensions:
+  - TemplateHaskell
+  - RecordWildCards
+  - MultiParamTypeClasses
+  - LambdaCase
+
+dependencies:
+  - base
+  - template-haskell
+  - template-haskell-natural
+  - template-haskell-lenses
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wmissing-export-lists
+  - -Wmissing-home-modules
+  - -Wpartial-fields
+  - -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+tests:
+  unit:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - hspec
+      - tuple-th-natural

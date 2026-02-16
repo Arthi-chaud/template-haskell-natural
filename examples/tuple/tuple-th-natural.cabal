@@ -1,0 +1,53 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.38.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tuple-th-natural
+version:        1.0.0.0
+description:    Partial reimplementation of github.com/DanielSchuessler/tuple-th
+build-type:     Simple
+
+library
+  exposed-modules:
+      TupleTH.Natural
+  other-modules:
+      Paths_tuple_th_natural
+  hs-source-dirs:
+      src
+  default-extensions:
+      TemplateHaskell
+      RecordWildCards
+      MultiParamTypeClasses
+      LambdaCase
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base
+    , template-haskell
+    , template-haskell-lenses
+    , template-haskell-natural
+  default-language: Haskell2010
+
+test-suite unit
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      TupleSpec
+      Paths_tuple_th_natural
+  hs-source-dirs:
+      test
+  default-extensions:
+      TemplateHaskell
+      RecordWildCards
+      MultiParamTypeClasses
+      LambdaCase
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base
+    , hspec
+    , template-haskell
+    , template-haskell-lenses
+    , template-haskell-natural
+    , tuple-th-natural
+  default-language: Haskell2010

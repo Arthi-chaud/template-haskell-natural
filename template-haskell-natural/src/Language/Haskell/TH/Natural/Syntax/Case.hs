@@ -8,6 +8,7 @@ module Language.Haskell.TH.Natural.Syntax.Case (
     --- * Functions
     matchConst,
     matchWild,
+    matchList,
     matchCon,
 
     -- * Pattern match on constructors
@@ -31,7 +32,9 @@ module Language.Haskell.TH.Natural.Syntax.Case (
 ) where
 
 import Control.Lens hiding (Empty)
+import Control.Monad (replicateM)
 import Data.Constructor.Extract
+import Language.Haskell.TH (Exp)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Internal.Utils
@@ -67,6 +70,14 @@ matchCon conName cmb = do
     case mexp of
         Nothing -> B.fail "Match's Expression is missing"
         Just e -> matches |>= TH.Match (fromEC conP) (TH.NormalB e) []
+
+matchList :: (GenExpr b) => Int -> ([Exp] -> b) -> CaseExprBuilder ()
+matchList listSize b = do
+    fieldNames <- liftB $ replicateM listSize $ TH.newName "_i"
+    let fieldExpr = TH.VarE <$> fieldNames
+        fieldPats = TH.VarP <$> fieldNames
+    e <- liftB $ genExpr $ b fieldExpr
+    matches |>= TH.Match (TH.ListP fieldPats) (TH.NormalB e) []
 
 --
 

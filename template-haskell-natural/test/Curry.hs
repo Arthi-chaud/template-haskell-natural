@@ -2,7 +2,7 @@
 
 module Curry (genCurries) where
 
-import Control.Monad
+import Control.Monad as M
 import Data.Constructor.Extract
 import Language.Haskell.TH
 import Language.Haskell.TH.Gen

@@ -5,6 +5,7 @@ packages:
   - template-haskell-natural
   - examples/packed
   - examples/pushable
+  - examples/tuple
 
 extra-deps:
   - packed-data-0.1.0.3

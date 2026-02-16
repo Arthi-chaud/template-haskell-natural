@@ -47,7 +47,7 @@ deconstructToDec d = TH.ValD (deconstructToPat d) (TH.NormalB $ _src d) []
 -- | Merge 'Deconstruct's that have the same 'src'
 mergeDeconstructs :: (MonadFail m) => [Deconstruct] -> m [Deconstruct]
 mergeDeconstructs [] = pure []
-mergeDeconstructs (d : ds) = case partition (\d' -> d' ^. src == d' ^. src) ds of
+mergeDeconstructs (d : ds) = case partition (\d' -> d ^. src == d' ^. src) ds of
     ([], _) -> (d :) <$> mergeDeconstructs ds
     (relatedDs, ds') -> do
         d' <- foldM mergeDeconstruct d relatedDs
