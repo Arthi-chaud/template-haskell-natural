@@ -22,8 +22,8 @@ import Language.Haskell.TH
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder as B
-import Language.Haskell.TH.Natural.Syntax.Name
-import Language.Haskell.TH.Syntax.ExtractedCons (HasName (..), TySynD (MkTySynD))
+import Language.Haskell.TH.Natural.Syntax.Common
+import Language.Haskell.TH.Syntax.ExtractedCons (HasTyVarBndr (..), TySynD (MkTySynD))
 
 type TypeSynonymDefinition = Q TySynD
 
@@ -36,6 +36,9 @@ data TypeSynonymBuilderState = MkTSBS
 
 makeLenses ''TypeSynonymBuilderState
 
+instance HasTyVarBndr TypeSynonymBuilderState [TyVarBndr BndrVis] where
+    tyVarBndr = tyVars
+
 newTypeSynonym :: String -> TypeSynonymBuilder step Ready () -> TypeSynonymDefinition
 newTypeSynonym synName builder = do
     MkTSBS{..} <- runBaseBuilder builder (MkTSBS Nothing [])
@@ -43,15 +46,6 @@ newTypeSynonym synName builder = do
         Nothing -> Prelude.fail "The type synonym does not have a type."
         Just r -> return r
     return $ MkTySynD (TH.mkName synName) _tyVars resTy
-
-addTypeVar :: TypeVarName -> TypeSynonymBuilder step step ()
-addTypeVar tyN = addTypeVar' tyN BndrReq Nothing
-
-addTypeVar' :: TypeVarName -> BndrVis -> Maybe TH.Kind -> TypeSynonymBuilder step step ()
-addTypeVar' tyN vis mkind =
-    tyVars |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
-  where
-    n = tyN ^. name
 
 returns :: (GenType b) => b -> TypeSynonymBuilder step Ready ()
 returns b = impure $ B.do

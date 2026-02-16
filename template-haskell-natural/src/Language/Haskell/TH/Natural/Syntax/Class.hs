@@ -37,16 +37,6 @@ newClass className next = runBaseBuilder next class_
   where
     class_ = MkClassD [] (mkName className) [] [] []
 
--- | Add the given 'TypeVar' to the class' arguments
-addTypeVar :: TypeVarName -> ClassBuilder ()
-addTypeVar tyN = addTypeVar' tyN BndrReq Nothing
-
-addTypeVar' :: TypeVarName -> BndrVis -> Maybe TH.Kind -> ClassBuilder ()
-addTypeVar' tyN vis mkind =
-    tyVarBndr |>= maybe (PlainTV n vis) (KindedTV n vis) mkind
-  where
-    n = tyN ^. name
-
 -- | Add functional dependencies
 addFunDep :: [TypeVarName] -> [TypeVarName] -> ClassBuilder ()
 addFunDep l r = funDep |>= FunDep (fmap (^. name) l) (fmap (^. name) r)
