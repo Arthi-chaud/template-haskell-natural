@@ -31,6 +31,7 @@ genAdd = genExpr $ newExpr $ B.do
 - Functions (+ signatures)
 - Lambda and Do- expressions
     - With a variant that uses typed Template Haskell
+- Datatypes (+ newtypes) and most constructors
 - Type Synonyms
 
 ## Internal

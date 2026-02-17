@@ -18,6 +18,13 @@ library
       Language.Haskell.TH.Natural.Syntax.Case
       Language.Haskell.TH.Natural.Syntax.Class
       Language.Haskell.TH.Natural.Syntax.Common
+      Language.Haskell.TH.Natural.Syntax.Datatype.Con
+      Language.Haskell.TH.Natural.Syntax.Datatype.Con.GADT
+      Language.Haskell.TH.Natural.Syntax.Datatype.Con.Normal
+      Language.Haskell.TH.Natural.Syntax.Datatype.Con.Record
+      Language.Haskell.TH.Natural.Syntax.Datatype.Data
+      Language.Haskell.TH.Natural.Syntax.Datatype.Internal
+      Language.Haskell.TH.Natural.Syntax.Datatype.Newtype
       Language.Haskell.TH.Natural.Syntax.Expr.Do
       Language.Haskell.TH.Natural.Syntax.Expr.Do.State
       Language.Haskell.TH.Natural.Syntax.Expr.Do.Typed

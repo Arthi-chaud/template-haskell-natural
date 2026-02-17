@@ -12,6 +12,7 @@ module Language.Haskell.TH.Gen (
     GenTExpr (..),
     GenType (..),
     GenPat (..),
+    GenCon (..),
 ) where
 
 import Data.Constructor.Extract.Class
@@ -89,3 +90,15 @@ instance GenPat Pat where
 
 instance (ExtractedConstructor a Pat) => GenPat a where
     genPat = pure . fromEC
+
+class GenCon a where
+    genCon :: a -> Q Con
+
+instance GenCon (Q Con) where
+    genCon = id
+
+instance GenCon Con where
+    genCon = pure
+
+instance (ExtractedConstructor a Con) => GenCon a where
+    genCon = pure . fromEC
