@@ -6,6 +6,7 @@ packages:
   - examples/packed
   - examples/pushable
   - examples/tuple
+  - examples/extract-cons
 
 extra-deps:
   - packed-data-0.1.0.3

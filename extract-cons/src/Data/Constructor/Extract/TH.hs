@@ -1,4 +1,11 @@
-module Data.Constructor.Extract.TH (extractConstructor, extractConstructorsOf) where
+module Data.Constructor.Extract.TH (
+    extractConstructor,
+    extractConstructorsOf,
+
+    -- * Internal
+    dataConstructorName,
+    dataDeclarationName,
+) where
 
 import Data.Constructor.Extract.Class
 import Data.Constructor.Extract.Internal

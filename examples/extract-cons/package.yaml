@@ -1,0 +1,43 @@
+name: extract-cons-natural
+version: 1.0.0.0
+
+description: "Re-implementation of the extract-cons library using template-haskell-natural"
+
+default-extensions:
+  - TemplateHaskell
+  - RecordWildCards
+  - MultiParamTypeClasses
+  - LambdaCase
+
+dependencies:
+  - base
+  - template-haskell
+  - template-haskell-natural
+  - template-haskell-lenses
+  - extract-cons
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wmissing-export-lists
+  - -Wmissing-home-modules
+  - -Wpartial-fields
+  - -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+tests:
+  unit:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - hspec
+      - extract-cons-natural

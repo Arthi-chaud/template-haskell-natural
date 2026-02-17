@@ -23,7 +23,7 @@ newCon :: String -> ConBuilder () -> ConDefinition
 newCon conN b = runBaseBuilder b (MkNormalC (TH.mkName conN) [])
 
 addField :: TH.Type -> ConBuilder ()
-addField t = addField' t defaultBang
+addField t = addField' (defaultBang, t)
 
-addField' :: TH.Type -> TH.Bang -> ConBuilder ()
-addField' t b = bts |>= (b, t)
+addField' :: (TH.Bang, TH.Type) -> ConBuilder ()
+addField' bt = bts |>= bt

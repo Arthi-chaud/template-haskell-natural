@@ -5,6 +5,7 @@
 module TupleTH.Natural where
 
 import Control.Monad
+import Data.Bifunctor
 import Data.Functor
 import Data.List ((!?))
 import Language.Haskell.TH
@@ -45,9 +46,9 @@ reverseTuple n = genExpr $ newExpr $ B.do
 deleteAtTuple :: TupleSize -> TupleFieldIndex -> ExpQ
 deleteAtTuple n idx = genExpr $ newExpr $ B.do
     tup <- arg
-    let idxs = filter (/= idx) [0 .. n - 1]
-    tupFields <- unsafeCastStep @Empty @Empty @Empty @Empty $ forM idxs $ \idx' -> getTupleField n idx' tup
-    returns (tupE (pure <$> tupFields))
+    tupFields <- getTupleFields n tup
+    let filteredFields = uncurry (++) $ second (drop 1) $ splitAt idx tupFields
+    returns (tupE (pure <$> filteredFields))
 
 orTuple :: TupleSize -> ExpQ
 orTuple n = foldTuple n [|False|] [|(||)|]

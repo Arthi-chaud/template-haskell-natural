@@ -29,7 +29,7 @@ newGADTCon ::
 newGADTCon conN t b = runBaseBuilder b (MkGadtC [TH.mkName conN] [] t)
 
 addField :: TH.Type -> GADTConBuilder ()
-addField t = addField' t defaultBang
+addField t = addField' (defaultBang, t)
 
-addField' :: TH.Type -> TH.Bang -> GADTConBuilder ()
-addField' t b = bts |>= (b, t)
+addField' :: (TH.Bang, TH.Type) -> GADTConBuilder ()
+addField' bt = bts |>= bt

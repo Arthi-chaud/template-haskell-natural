@@ -13,13 +13,17 @@ module Language.Haskell.TH.Natural.Syntax.Expr.Untyped.Class (
 
     -- * Deconstruction
     getField,
+    getFields,
     getField',
+    getField_,
     getTupleField,
+    getTupleFields,
     getTupleField',
     getField'',
     strict,
 ) where
 
+import Control.Monad
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Internal.Utils
@@ -60,30 +64,53 @@ getField'' ::
     Either Int TH.Name ->
     -- | The index of the field in the constructor
     Int ->
+    -- | The number of fields in the constructor, if known
     -- | The expression to deconstruct
+    Maybe Int ->
     b ->
     -- | Modify the created pattern (e.g. add BangP or type annotation)
     (TH.Pat -> TH.Q TH.Pat) ->
     Builder st step Empty TH.Exp
-getField'' cName idx qExpr fPat = unsafeCastStep $ do
+getField'' cName idx fCount qExpr fPat = unsafeCastStep $ do
     expr <- liftB $ genExpr qExpr
     patVarName <- liftB $ TH.newName "pat"
     pat <- liftB $ genPat $ fPat $ TH.VarP patVarName
-    fieldCount <- liftB $ either pure conFieldCount cName
+    fieldCount <- liftB $ maybe (either pure conFieldCount cName) pure fCount
     addDeconstruct $ MkDec cName [(idx, pat)] expr fieldCount
     return $ TH.VarE patVarName
 
 getField :: (IsExprBuilder st, GenExpr b) => TH.Name -> Int -> b -> Builder st step Empty TH.Exp
-getField cName idx qExpr = getField'' (Right cName) idx qExpr pure
+getField cName idx qExpr = getField'' (Right cName) idx Nothing qExpr pure
 
 getField' :: (IsExprBuilder st, GenExpr b) => TH.Name -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> Builder st step Empty TH.Exp
-getField' cName = getField'' (Right cName)
+getField' cName idx = getField'' (Right cName) idx Nothing
+
+getField_ ::
+    (IsExprBuilder st, GenExpr b) =>
+    TH.Name ->
+    -- | The index of the field to get
+    Int ->
+    -- | The number of fields in the constructor
+    Int ->
+    b ->
+    Builder st step Empty TH.Exp
+getField_ cName idx fCount b = getField'' (Right cName) idx (Just fCount) b pure
 
 getTupleField :: (IsExprBuilder st, GenExpr b) => Int -> Int -> b -> Builder st step Empty TH.Exp
-getTupleField size idx qExpr = getField'' (Left size) idx qExpr pure
+getTupleField size idx qExpr = getField'' (Left size) idx (Just size) qExpr pure
 
 getTupleField' :: (IsExprBuilder st, GenExpr b) => Int -> Int -> b -> (TH.Pat -> TH.Q TH.Pat) -> Builder st step Empty TH.Exp
-getTupleField' size = getField'' (Left size)
+getTupleField' size idx = getField'' (Left size) idx Nothing
+
+getFields :: (IsExprBuilder st, GenExpr b) => TH.Name -> Int -> b -> Builder st step Empty [TH.Exp]
+getFields n fcount b = unsafeCastStep $ do
+    e <- liftB $ genExpr b
+    forM [0 .. fcount - 1] $ \i -> getField_ n i fcount e
+
+getTupleFields :: (IsExprBuilder st, GenExpr b) => Int -> b -> Builder st step Empty [TH.Exp]
+getTupleFields size b = unsafeCastStep $ do
+    e <- liftB $ genExpr b
+    forM [0 .. size - 1] $ \i -> getTupleField size i e
 
 strict :: TH.Pat -> TH.Q TH.Pat
 strict = pure . TH.BangP

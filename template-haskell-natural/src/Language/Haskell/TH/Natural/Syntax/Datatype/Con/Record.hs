@@ -23,7 +23,7 @@ newRecordCon :: String -> RecordConBuilder () -> RecordConDefinition
 newRecordCon conN b = runBaseBuilder b (MkRecC (TH.mkName conN) [])
 
 addField :: String -> TH.Type -> RecordConBuilder ()
-addField n t = addField' n t defaultBang
+addField n t = addField' (n, defaultBang, t)
 
-addField' :: String -> TH.Type -> TH.Bang -> RecordConBuilder ()
-addField' n t b = vbts |>= (TH.mkName n, b, t)
+addField' :: (String, TH.Bang, TH.Type) -> RecordConBuilder ()
+addField' (n, b, t) = vbts |>= (TH.mkName n, b, t)

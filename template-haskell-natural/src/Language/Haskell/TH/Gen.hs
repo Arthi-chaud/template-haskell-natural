@@ -102,3 +102,6 @@ instance GenCon Con where
 
 instance (ExtractedConstructor a Con) => GenCon a where
     genCon = pure . fromEC
+
+instance (GenCon a) => GenCon (Q a) where
+    genCon qb = qb >>= genCon
