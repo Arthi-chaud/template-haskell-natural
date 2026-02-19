@@ -1,5 +1,7 @@
-name: template-haskell-lenses
+name: lens-adt
 version: 1.0.0.0
+
+description: "Generate lenses for non-record ADTs with one constructor"
 
 default-extensions:
   - TemplateHaskell
@@ -10,8 +12,8 @@ default-extensions:
 dependencies:
   - base
   - template-haskell
-  - lens-adt
-  - extract-cons
+  - lens
+  - generic-lens
 
 ghc-options:
   - -Wall
@@ -26,15 +28,3 @@ ghc-options:
 
 library:
   source-dirs: src
-
-tests:
-  unit:
-    main: Spec.hs
-    source-dirs: test
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
-    dependencies:
-      - hspec
-      - template-haskell-lenses

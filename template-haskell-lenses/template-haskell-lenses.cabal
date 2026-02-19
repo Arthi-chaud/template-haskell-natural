@@ -12,7 +12,6 @@ library
   exposed-modules:
       Language.Haskell.TH.Syntax.ExtractedCons
       Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons
-      Language.Haskell.TH.Syntax.ExtractedCons.Internal
       Language.Haskell.TH.Syntax.ExtractedCons.Lenses
   other-modules:
       Paths_template_haskell_lenses
@@ -27,8 +26,7 @@ library
   build-depends:
       base
     , extract-cons
-    , generic-lens
-    , lens
+    , lens-adt
     , template-haskell
   default-language: Haskell2010
 
@@ -48,9 +46,8 @@ test-suite unit
   build-depends:
       base
     , extract-cons
-    , generic-lens
     , hspec
-    , lens
+    , lens-adt
     , template-haskell
     , template-haskell-lenses
   default-language: Haskell2010
