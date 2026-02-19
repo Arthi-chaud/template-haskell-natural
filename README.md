@@ -1,10 +1,8 @@
 # Natural Metaprogramming for Haskell 
 
-Template Haskell allows building Haskell programs at compile time. Through an extensive AST type, it is possible to generate anything from typeclasses, to expressions. 
+Template Haskell allows building Haskell programs at compile time. Through an extensive AST type, it is possible to generate anything from typeclasses, to expressions. However, the sheer amount of ADTs defined by the library, along with the simplicity of the API can make it unpleasant to define simple things (e.g. instances or bind expressions to variables).
 
-However,the sheer amount of ADTs defined by the library, along with the simplicity of the API can make it unpleasant to define simple things (e.g. instances or bind expressions to variables).
-
-`template-haskell-natural` is a DSL that acts like a wrapper around Template Haskell's AST and helps building programs. It is designed so that the code that builds the AST follows the same flow as the generated program. Worded differently, writing meta-programs feels _natural_.
+`template-haskell-natural` is a DSL that acts like a wrapper around Template Haskell's AST and helps build programs. It is designed so that the code that builds the AST follows the same flow as the generated program. Worded differently, writing meta-programs feels _natural_.
 
 
 ```haskell
@@ -44,6 +42,10 @@ The DSL is backed by 2 internal libraries that make interacting with TH ASTs eas
 Building ASTs is mainly done through a graded state monad, whose state is an extracted constructor (`ClassD`, `InstanceD`) or a custom state (for lambdas and do- expressions). Thanks to the synergy between lenses and the state monad, it is easy to interact with the state imperatively. 
 
 This means that while the library is not safe from breaking when TH's API evolves, it should be easy to maintain it over time.
+
+## Documentation
+
+The Haddock documentation is available on [GitHub Pages](https://arthi-chaud.github.io/template-haskell-natural/). It's still a work in progress.
 
 ## Examples
 
