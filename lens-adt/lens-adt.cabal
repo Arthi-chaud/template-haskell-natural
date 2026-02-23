@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           lens-adt
-version:        1.0.0.0
+version:        0.1.0
 description:    Generate lenses for non-record ADTs with one constructor
 build-type:     Simple
 

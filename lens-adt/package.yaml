@@ -1,5 +1,5 @@
 name: lens-adt
-version: 1.0.0.0
+version: 0.1.0
 
 description: "Generate lenses for non-record ADTs with one constructor"
 
