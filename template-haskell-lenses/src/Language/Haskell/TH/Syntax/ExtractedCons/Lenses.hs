@@ -7,6 +7,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 
+-- | Lenses generated using 'lens-adt'
 module Language.Haskell.TH.Syntax.ExtractedCons.Lenses where
 
 import Control.Lens.TH.ADT

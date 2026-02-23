@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 
+-- | Extracted constructors generated using 'extract-cons'
 module Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons where
 
 import Data.Constructor.Extract
