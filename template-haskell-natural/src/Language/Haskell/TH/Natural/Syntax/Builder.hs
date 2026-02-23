@@ -1,3 +1,4 @@
+-- | 'Builder's allow building Template Haskell ASTs
 module Language.Haskell.TH.Natural.Syntax.Builder (
     -- * Main Builders
     Builder,

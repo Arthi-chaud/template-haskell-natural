@@ -37,22 +37,27 @@ import Language.Haskell.TH.Syntax.ExtractedCons hiding (expr)
 type DoExprDefinition = TH.Q DoE
 type DoExprBuilder = Builder DoExprBuilderState
 
+-- | Builds a do-expression
+newDo :: DoExprBuilder step Ready () -> DoExprDefinition
+newDo = runExprBuilder
+
+-- | Same as 'newDo', but allow qualifying the do-expression
 newQualifiedDo :: TH.Name -> DoExprBuilder step Ready () -> DoExprDefinition
 newQualifiedDo modN builder = do
     doE <- runExprBuilder builder
     return $ over modName (const $ Just $ ModName $ nameBase modN) doE
 
-newDo :: DoExprBuilder step Ready () -> DoExprDefinition
-newDo = runExprBuilder
-
+-- | Add a statement to the do-expression
 stmt :: (GenExpr b) => b -> DoExprBuilder step Ready ()
 stmt = returns
 
-strictBind :: (GenExpr b) => b -> DoExprBuilder step Empty TH.Exp
-strictBind = bind_ True
-
+-- | Bind a value using the backward arrow
 bind :: (GenExpr b) => b -> DoExprBuilder step Empty TH.Exp
 bind = bind_ False
+
+-- | Same as 'bind', but uses a bang pattern
+strictBind :: (GenExpr b) => b -> DoExprBuilder step Empty TH.Exp
+strictBind = bind_ True
 
 bind_ :: (GenExpr b) => Bool -> b -> DoExprBuilder step Empty TH.Exp
 bind_ s q = impure $ do

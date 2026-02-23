@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
+-- | Internals for building simple expressions. Do not use unless you know what you are doing
 module Language.Haskell.TH.Natural.Syntax.Expr.Internal (
     -- * Binding (Let, do bind)
     Binding (..),

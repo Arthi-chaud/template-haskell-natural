@@ -1,3 +1,4 @@
+-- | QoL / Utility functions
 module Language.Haskell.TH.Natural.Syntax.Utils (apply, applyT) where
 
 import qualified Language.Haskell.TH as TH

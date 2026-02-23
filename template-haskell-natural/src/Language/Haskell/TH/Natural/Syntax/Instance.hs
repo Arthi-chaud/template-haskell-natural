@@ -1,7 +1,7 @@
+-- | 'Builder' for instance declaration
 module Language.Haskell.TH.Natural.Syntax.Instance (
     -- * Builder
     newInstance,
-    InstanceDefinition,
     InstanceBuilder,
 
     -- * Functions
@@ -24,11 +24,10 @@ import Language.Haskell.TH.Natural.Syntax.Common
 import Language.Haskell.TH.Natural.Syntax.Name
 import Language.Haskell.TH.Syntax.ExtractedCons
 
-type InstanceDefinition = Q InstanceD
-
 type InstanceBuilder a = ConstBuilder InstanceD a
 
-newInstance :: TH.Name -> InstanceBuilder () -> InstanceDefinition
+-- | Builds a new instance for the typeclass. The argument is the 'Name' of that typeclass
+newInstance :: TH.Name -> InstanceBuilder () -> Q InstanceD
 newInstance className builder = runBaseBuilder builder instance_
   where
     instance_ = MkInstanceD Nothing [] (TH.ConT className) []

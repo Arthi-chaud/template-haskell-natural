@@ -1,9 +1,9 @@
 {-# LANGUAGE RankNTypes #-}
 
+-- | 'Builder' for declaring typeclass
 module Language.Haskell.TH.Natural.Syntax.Class (
     -- * Builder
     newClass,
-    ClassDefinition,
     ClassBuilder,
 
     -- * Functions
@@ -27,12 +27,10 @@ import Language.Haskell.TH.Natural.Syntax.Common
 import Language.Haskell.TH.Natural.Syntax.Name
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName)
 
-type ClassDefinition = Q ClassD
-
 type ClassBuilder a = ConstBuilder ClassD a
 
--- | Starts the building of a class declaration, using its name and a 'ClassBuilder'
-newClass :: String -> ClassBuilder () -> ClassDefinition
+-- | Builds a typeclass declaration, using its name and a 'ClassBuilder'
+newClass :: String -> ClassBuilder () -> Q ClassD
 newClass className next = runBaseBuilder next class_
   where
     class_ = MkClassD [] (mkName className) [] [] []

@@ -19,15 +19,17 @@ addBody s = do
     dec <- liftB $ genDec s
     decs |>= dec
 
--- | Add many 'Dec's
+-- | Add many 'Dec's. Usually used with 'newFunc'
 addBody' :: (HasDecs s [a]) => TH.Q [a] -> Builder s step step ()
 addBody' s = do
     dec' <- liftB s
     decs <>= dec'
 
+-- | Add the type variable to the 'tyVarBndr' list
 addTypeVar :: (HasTyVarBndr s [TH.TyVarBndr TH.BndrVis]) => TypeVarName -> Builder s step step ()
 addTypeVar tyN = addTypeVar' tyN TH.BndrReq Nothing
 
+-- | Same as 'addTypeVar', but allows setting the kind and vis of the type variable
 addTypeVar' :: (HasTyVarBndr s [TH.TyVarBndr vis]) => TypeVarName -> vis -> Maybe TH.Kind -> Builder s step step ()
 addTypeVar' tyN vis mkind = tyVarBndr |>= maybe (TH.PlainTV n vis) (TH.KindedTV n vis) mkind
   where

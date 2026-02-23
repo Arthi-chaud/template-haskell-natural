@@ -1,11 +1,12 @@
 {-# LANGUAGE QualifiedDo #-}
 
--- | In Template Haskell, a signature ('SigD') refers to a symbol's type signature with a 'Name' (e.g. _length :: [a] -> Int_). Here, by _signature_, we mean just the type signature, without a name.
+-- | 'Builder' for type signatures
+--
+-- In Template Haskell, a signature ('SigD') refers to a symbol's type signature with a 'Name' (e.g. _length :: [a] -> Int_). Here, by _signature_, we mean just the type signature, without a name.
 module Language.Haskell.TH.Natural.Syntax.Signature (
     -- * Builder
     newSignature,
     SignatureBuilder,
-    SignatureDefinition,
 
     -- * State
     SignatureState (..),
@@ -39,8 +40,6 @@ import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Natural.Syntax.Name
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (inline, tyVarBndr)
 
-type SignatureDefinition = Q ForallT
-
 type SignatureBuilder prev next a = Builder SignatureState prev next a
 
 data SignatureState = MkSBS
@@ -55,7 +54,8 @@ makeLenses ''SignatureState
 instance GenType (SignatureBuilder step Ready ()) where
     genTy = fmap fromEC . newSignature
 
-newSignature :: SignatureBuilder step Ready () -> SignatureDefinition
+-- | Builds a type signature
+newSignature :: SignatureBuilder step Ready () -> Q ForallT
 newSignature builder = do
     MkSBS{..} <- runBaseBuilder builder (MkSBS [] [] [] Nothing)
     resTy <- case _result of

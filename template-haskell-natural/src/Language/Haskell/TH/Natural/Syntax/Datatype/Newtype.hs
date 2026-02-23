@@ -1,5 +1,4 @@
 module Language.Haskell.TH.Natural.Syntax.Datatype.Newtype (
-    NewtypeDefinition,
     newNewtype,
 
     -- * Re-exports
@@ -12,14 +11,14 @@ import Language.Haskell.TH.Natural.Syntax.Datatype.Data
 import Language.Haskell.TH.Natural.Syntax.Datatype.Internal
 import Language.Haskell.TH.Syntax.ExtractedCons
 
-type NewtypeDefinition = TH.Q NewtypeD
-
 -- | Allows defining a newtype using a 'DataBuilder'.
 --
 -- Will throw at compile-time (and thus interupt compilation) if the newtype
+--
 --  - has more than one constructor
+--
 --  - that constructor has more than one field
-newNewtype :: String -> DataBuilder () -> NewtypeDefinition
+newNewtype :: String -> DataBuilder () -> TH.Q NewtypeD
 newNewtype dataNameStr builder = do
     dataD <- newData dataNameStr builder
     case dataD ^. con of

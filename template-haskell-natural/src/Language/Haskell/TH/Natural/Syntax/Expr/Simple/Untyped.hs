@@ -6,7 +6,6 @@
 module Language.Haskell.TH.Natural.Syntax.Expr.Simple.Untyped (
     -- * Builder
     newExpr,
-    SimpleExprDefinition,
     SimpleExprBuilder,
 
     -- * State
@@ -36,12 +35,13 @@ import Language.Haskell.TH.Natural.Syntax.Expr.Untyped
 import Language.Haskell.TH.Syntax.ExtractedCons (LamE (..))
 import Prelude hiding ((>>=))
 
-type SimpleExprDefinition = TH.Q LamE
 type SimpleExprBuilder = Builder SimpleExprBuilderState
 
-newExpr :: SimpleExprBuilder step Ready () -> SimpleExprDefinition
+-- | Builds a lambda/let expression
+newExpr :: SimpleExprBuilder step Ready () -> TH.Q LamE
 newExpr = runExprBuilder
 
+-- | Add an argument to the lambda
 arg :: SimpleExprBuilder curr curr TH.Exp
 arg = do
     nextArgName <- liftB $ TH.newName "arg"
@@ -49,7 +49,7 @@ arg = do
     return $ TH.VarE nextArgName
 
 instance IsExprBuilder SimpleExprBuilderState where
-    type Definition SimpleExprBuilderState = SimpleExprDefinition
+    type Definition SimpleExprBuilderState = TH.Q LamE
     returns q = unsafeCastStep $ do
         expr <- liftB $ genExpr q
         returnedExp ?= expr

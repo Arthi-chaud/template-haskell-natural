@@ -1,19 +1,21 @@
 {-# LANGUAGE QualifiedDo #-}
 
+-- | 'Builder' for data type declaration
 module Language.Haskell.TH.Natural.Syntax.Datatype.Data (
     -- * Type
-    DataDefinition,
-    DataBuilder,
     newData,
+    DataBuilder,
 
     -- * Functions
     addCon,
+    setKind,
+    addDeriving,
+    addDeriving',
+
+    -- ** Reexports
     addContext,
     addTypeVar,
-    addDeriving,
-    setKind,
     addTypeVar',
-    addDeriving',
 ) where
 
 import Control.Lens
@@ -23,11 +25,10 @@ import Language.Haskell.TH.Natural.Syntax.Common
 import qualified Language.Haskell.TH.Syntax as TH
 import Language.Haskell.TH.Syntax.ExtractedCons
 
-type DataDefinition = TH.Q DataD
-
 type DataBuilder = ConstBuilder DataD
 
-newData :: String -> DataBuilder () -> DataDefinition
+-- | Builds a new data type declaration. The first argument is the name of the data type.
+newData :: String -> DataBuilder () -> TH.Q DataD
 newData dataNameStr builder = runBaseBuilder builder baseData
   where
     baseData = MkDataD [] dataName [] Nothing [] []
@@ -47,6 +48,7 @@ addDeriving tyN = addDeriving' $ TH.DerivClause Nothing [TH.ConT tyN]
 addDeriving' :: TH.DerivClause -> DataBuilder ()
 addDeriving' dc = derive |>= dc
 
+-- | Add a constructor to the data type
 addCon :: (GenCon b) => b -> DataBuilder ()
 addCon b = B.do
     newCon <- liftB $ genCon b

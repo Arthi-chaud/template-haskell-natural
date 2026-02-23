@@ -16,7 +16,13 @@ newtype BaseBuilder m s (prev :: k) (next :: k) a
     = MkB {unB :: StateT s m a}
     deriving (Functor)
 
-data BuilderStep = Empty | Ready deriving (Eq, Show)
+-- | Typically used a kinds to represent the progress of a 'Builder' computation
+data BuilderStep
+    = -- | When the builder is not _ready_ to produce a valid AST (i.e. one of the fields is "empty")
+      Empty
+    | -- | The builder is ready to produce the AST
+      Ready
+    deriving (Eq, Show)
 
 -- | Common type for anything that builds a TH AST.
 type Builder = BaseBuilder TH.Q
@@ -69,5 +75,6 @@ impure = unsafeCastStep
 unsafeWithState :: StateT s m a -> BaseBuilder m s prev curr a
 unsafeWithState = MkB
 
+-- | Unsafely changes the state of the computation. Breaks the security provided by the type-level tracking of state.
 unsafeCastStep :: forall prev' curr' prev curr m s a. BaseBuilder m s prev curr a -> BaseBuilder m s prev' curr' a
 unsafeCastStep (MkB m) = MkB m

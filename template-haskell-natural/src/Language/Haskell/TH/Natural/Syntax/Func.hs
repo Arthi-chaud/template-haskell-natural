@@ -1,7 +1,7 @@
+-- | 'Builder' for top-level function declaration
 module Language.Haskell.TH.Natural.Syntax.Func (
     -- * Builder
     newFunc,
-    FuncDefinition,
     FuncBuilder,
 
     -- * State
@@ -9,12 +9,14 @@ module Language.Haskell.TH.Natural.Syntax.Func (
 
     -- * Functions
 
-    --- * Clause
+    -- ** Clause
     addClause,
     bodyFromExp,
-    --- * Signature
+
+    -- ** Signature
     setSignature,
-    --- * Pragmas
+
+    -- ** Pragmas
     inline,
     setInline,
     addPragma,
@@ -39,8 +41,6 @@ import Language.Haskell.TH.Natural.Syntax.Builder
 import Language.Haskell.TH.Natural.Syntax.Builder.Monad
 import Language.Haskell.TH.Syntax.ExtractedCons hiding (fName, inline)
 
-type FuncDefinition = Q [TH.Dec]
-
 data FuncBuilderState = MkFBS
     { _pragmas :: [TH.Pragma]
     , _dec :: FunD
@@ -53,11 +53,13 @@ type FuncBuilder = Builder FuncBuilderState
 
 -- TODO Should not be ready if 0 clause
 
-newFunc :: String -> FuncBuilder step Ready () -> FuncDefinition
+-- | Builds a function declaration. The string argument is the name of the function
+newFunc :: String -> FuncBuilder step Ready () -> Q [TH.Dec]
 newFunc fName builder = do
     MkFBS{..} <- runBaseBuilder builder (MkFBS [] (MkFunD (mkName fName) []) Nothing)
     return ((TH.PragmaD <$> _pragmas) ++ (fromEC <$> maybeToList _signature) ++ [fromEC _dec])
 
+-- | Set the signature of the function
 setSignature :: (GenType a) => a -> FuncBuilder step step ()
 setSignature sigBuilder = do
     sig <- liftB $ genTy sigBuilder
@@ -91,5 +93,6 @@ setInline i rm phs = do
     let newInlineP = TH.InlineP fName i rm phs
     pragmas <|= newInlineP
 
+-- | Add a 'Pragma' alongside the function declaration
 addPragma :: TH.Pragma -> FuncBuilder step step ()
 addPragma p = pragmas <|= p

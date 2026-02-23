@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
--- | Typeclasses to standardise the arguments that the various functions accept
+-- | Typeclasses to standardise the arguments that the various Builder functions take
 module Language.Haskell.TH.Gen (
     GenDec (..),
     GenDecs (..),

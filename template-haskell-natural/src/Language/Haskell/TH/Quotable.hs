@@ -13,8 +13,10 @@ instance Quotable (Q a) a where
 instance Quotable a a where
     q = pure
 
+-- | Like 'q', but for extracted constructors (see 'ExtractedConstructor' from 'extract-cons')
 qEC :: (ExtractedConstructor a b) => a -> Q b
 qEC = pure . fromEC
 
-qT :: TExp a -> Code Q a
+-- | Like 'q', but for typed expressions
+qT :: TExp t -> Code Q t
 qT = Code . pure

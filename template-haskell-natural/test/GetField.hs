@@ -19,7 +19,7 @@ data InfixSum = Int :+: Int
 
 newDeclarationGroup
 
-mkFst :: FuncDefinition
+mkFst :: DecsQ
 mkFst = newFunc "fstPair" $ F.do
     setSignature [t|forall a b. (a, b) -> a|]
     bodyFromExp $ newExpr $ E.do
@@ -27,7 +27,7 @@ mkFst = newFunc "fstPair" $ F.do
         a <- getField 'Pair 0 pair
         returns a
 
-mkGetSumLeft :: FuncDefinition
+mkGetSumLeft :: DecsQ
 mkGetSumLeft = newFunc "getSumLeft" $ F.do
     setSignature [t|InfixSum -> Int|]
     bodyFromExp $ newExpr $ E.do

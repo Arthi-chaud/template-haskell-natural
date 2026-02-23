@@ -1,3 +1,4 @@
+-- | Internal utilities
 module Language.Haskell.TH.Natural.Internal.Utils (conFieldCount) where
 
 import Data.Constructor.Extract (ExtractedConstructor (toEC))
@@ -5,7 +6,7 @@ import Data.List (find)
 import Language.Haskell.TH.Syntax
 import Language.Haskell.TH.Syntax.ExtractedCons.ExtractedCons
 
--- | Get the number of fields in a constructor or a patternsynonym
+-- | Get the number of fields in a constructor or a pattern synonym
 conFieldCount :: Name -> Q Int
 conFieldCount conName_ = do
     info <- reify conName_

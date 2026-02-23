@@ -1,11 +1,11 @@
 {-# LANGUAGE QualifiedDo #-}
 
+-- | Builder for type synonyms
 module Language.Haskell.TH.Natural.Syntax.TypeSynonym (
     -- * Type
     newTypeSynonym,
     TypeSynonymBuilder,
     TypeSynonymBuilderState (..),
-    TypeSynonymDefinition,
 
     -- * Functions
     addTypeVar,
@@ -25,8 +25,6 @@ import Language.Haskell.TH.Natural.Syntax.Builder as B
 import Language.Haskell.TH.Natural.Syntax.Common
 import Language.Haskell.TH.Syntax.ExtractedCons (HasTyVarBndr (..), TySynD (MkTySynD))
 
-type TypeSynonymDefinition = Q TySynD
-
 type TypeSynonymBuilder prev next a = Builder TypeSynonymBuilderState prev next a
 
 data TypeSynonymBuilderState = MkTSBS
@@ -39,7 +37,8 @@ makeLenses ''TypeSynonymBuilderState
 instance HasTyVarBndr TypeSynonymBuilderState [TyVarBndr BndrVis] where
     tyVarBndr = tyVars
 
-newTypeSynonym :: String -> TypeSynonymBuilder step Ready () -> TypeSynonymDefinition
+-- | Builds a type synonym. The first argument is the name of the type synonym
+newTypeSynonym :: String -> TypeSynonymBuilder step Ready () -> Q TySynD
 newTypeSynonym synName builder = do
     MkTSBS{..} <- runBaseBuilder builder (MkTSBS Nothing [])
     resTy <- case _resType of
@@ -47,6 +46,7 @@ newTypeSynonym synName builder = do
         Just r -> return r
     return $ MkTySynD (TH.mkName synName) _tyVars resTy
 
+-- | Sets the RHS of the type synonym definition
 returns :: (GenType b) => b -> TypeSynonymBuilder step Ready ()
 returns b = impure $ B.do
     ty <- liftB $ genTy b

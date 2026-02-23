@@ -24,5 +24,6 @@ type SimpleTypedExprBuilder = TypedExprBuilder SimpleExprBuilderState
 newExpr :: SimpleTypedExprBuilder '[] args (Returns a) () -> SimpleTypedExprDefinition (args :~> Returns a)
 newExpr = runTypedExprBuilder
 
+-- | Adds an argument to the underlying 'LamE'
 arg :: SimpleTypedExprBuilder args (args :> a) Unknown (TH.TExp a)
 arg = unsafeUntyped $ fmap TH.TExp Untyped.arg

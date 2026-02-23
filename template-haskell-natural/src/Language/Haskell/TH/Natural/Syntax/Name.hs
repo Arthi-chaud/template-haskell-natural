@@ -6,5 +6,6 @@ import Language.Haskell.TH.Syntax.ExtractedCons (VarT (MkVarT))
 
 type TypeVarName = VarT
 
+-- | Builds a new type variable
 newTypeVar :: String -> Builder st step step TypeVarName
 newTypeVar n = liftB (MkVarT <$> TH.newName n)
