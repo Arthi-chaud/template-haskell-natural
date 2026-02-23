@@ -3,9 +3,10 @@
 module Data.Constructor.Extract.Natural (extractConstructor) where
 
 import Control.Monad
-import Data.Constructor.Extract (ExtractOptions (..), dataConstructorName, dataDeclarationName)
+import Data.Constructor.Extract (ExtractOptions (..))
 import Data.Constructor.Extract.Class
 import Data.Constructor.Extract.Internal
+import Data.Constructor.Extract.TH (dataConstructorName, dataDeclarationName)
 import Language.Haskell.TH
 import Language.Haskell.TH.Gen
 import Language.Haskell.TH.Natural.Syntax.Builder as B
