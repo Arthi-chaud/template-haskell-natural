@@ -1,4 +1,4 @@
-name: template-haskell-lenses
+name: th-lenses
 version: 0.1.0
 
 default-extensions:
@@ -37,4 +37,4 @@ tests:
       - -with-rtsopts=-N
     dependencies:
       - hspec
-      - template-haskell-lenses
+      - th-lenses

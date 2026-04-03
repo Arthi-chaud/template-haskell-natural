@@ -38,7 +38,7 @@ library:
   source-dirs: src
   dependencies:
     - extract-cons
-    - template-haskell-lenses
+    - th-lenses
     - mtl
     - lens
 tests:

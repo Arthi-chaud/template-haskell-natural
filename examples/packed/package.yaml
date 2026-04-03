@@ -12,7 +12,7 @@ dependencies:
   - packed-data
   - template-haskell
   - template-haskell-natural
-  - template-haskell-lenses
+  - th-lenses
 
 ghc-options:
   - -Wall

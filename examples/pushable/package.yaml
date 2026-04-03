@@ -14,7 +14,7 @@ dependencies:
   - linear-base
   - template-haskell
   - template-haskell-natural
-  - template-haskell-lenses
+  - th-lenses
   - th-abstraction
 
 ghc-options:

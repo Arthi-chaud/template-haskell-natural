@@ -2,7 +2,7 @@ resolver: lts-24.29 # GHC 9.10.3
 packages:
   - extract-cons
   - lens-adt
-  - template-haskell-lenses
+  - th-lenses
   - template-haskell-natural
   - examples/packed
   - examples/pushable

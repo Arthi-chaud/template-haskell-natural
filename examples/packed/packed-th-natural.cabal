@@ -30,8 +30,8 @@ library
       base
     , packed-data
     , template-haskell
-    , template-haskell-lenses
     , template-haskell-natural
+    , th-lenses
   default-language: Haskell2010
 
 test-suite unit
@@ -54,6 +54,6 @@ test-suite unit
     , packed-data
     , packed-th-natural
     , template-haskell
-    , template-haskell-lenses
     , template-haskell-natural
+    , th-lenses
   default-language: Haskell2010

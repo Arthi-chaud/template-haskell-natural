@@ -13,7 +13,7 @@ dependencies:
   - base
   - template-haskell
   - template-haskell-natural
-  - template-haskell-lenses
+  - th-lenses
   - extract-cons
 
 ghc-options:
