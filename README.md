@@ -1,8 +1,8 @@
-# Natural Metaprogramming for Haskell 
+# Build Template Haskell ASTs using monads 
 
 Template Haskell allows building Haskell programs at compile time. Through an extensive AST type, it is possible to generate anything from typeclasses, to expressions. However, the sheer amount of ADTs defined by the library, along with the simplicity of the API can make it unpleasant to define simple things (e.g. instances or bind expressions to variables).
 
-`template-haskell-natural` is a DSL that acts like a wrapper around Template Haskell's AST and helps build programs. It is designed so that the code that builds the AST follows the same flow as the generated program. Worded differently, writing meta-programs feels _natural_.
+`th-builder` is a DSL that acts like a wrapper around Template Haskell's AST and helps build programs. It is designed so that the code that builds the AST follows the same flow as the generated program.
 
 
 ```haskell
@@ -15,14 +15,14 @@ genAdd = LamE [VarP a, VarP b] (VarE a `AppE` VarE b)
         a = mkName "a"
         b = mkName "b"
 
--- Using template-haskell-natural
+-- Using th-builder
 genAdd = genExpr $ newExpr $ B.do
     a <- arg
     b <- arg
     returns (a `AppE` b)
 ```
 
-`template-haskell-natural` allows building the following declarations/expressions:
+`th-builder` allows building the following declarations/expressions:
 
 - Typeclasses
 - Instances
@@ -37,7 +37,7 @@ genAdd = genExpr $ newExpr $ B.do
 The DSL is backed by 2 internal libraries that make interacting with TH ASTs easier:
 
 - `extract-cons`: Using TH, it extracts the constructors of a given data type into standalone data types.
-- `template-haskell-lenses`: It defines lenses for most of the constructors in TH's API, _extracted_ by the previous library.
+- `th-lenses`: It defines lenses for most of the constructors in TH's API, _extracted_ by the previous library.
 
 Building ASTs is mainly done through a graded state monad, whose state is an extracted constructor (`ClassD`, `InstanceD`) or a custom state (for lambdas and do- expressions). Thanks to the synergy between lenses and the state monad, it is easy to interact with the state imperatively. 
 
@@ -45,7 +45,7 @@ This means that while the library is not safe from breaking when TH's API evolve
 
 ## Documentation
 
-The Haddock documentation is available on [GitHub Pages](https://arthi-chaud.github.io/template-haskell-natural/). It's still a work in progress.
+The Haddock documentation is available on [GitHub Pages](https://arthi-chaud.github.io/th-builder/). It's still a work in progress.
 
 ## Examples
 
