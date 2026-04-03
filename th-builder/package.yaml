@@ -1,4 +1,4 @@
-name: template-haskell-natural
+name: th-builder
 version: 0.1.0
 
 default-extensions:
@@ -52,4 +52,4 @@ tests:
     dependencies:
       - hspec
       - extract-cons
-      - template-haskell-natural
+      - th-builder

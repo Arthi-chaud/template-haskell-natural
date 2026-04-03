@@ -1,7 +1,7 @@
 name: extract-cons-natural
 version: 1.0.0.0
 
-description: "Re-implementation of the extract-cons library using template-haskell-natural"
+description: "Re-implementation of the extract-cons library using th-builder"
 
 default-extensions:
   - TemplateHaskell
@@ -12,7 +12,7 @@ default-extensions:
 dependencies:
   - base
   - template-haskell
-  - template-haskell-natural
+  - th-builder
   - th-lenses
   - extract-cons
 

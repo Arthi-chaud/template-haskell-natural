@@ -3,7 +3,7 @@ packages:
   - extract-cons
   - lens-adt
   - th-lenses
-  - template-haskell-natural
+  - th-builder
   - examples/packed
   - examples/pushable
   - examples/tuple

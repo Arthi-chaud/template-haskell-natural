@@ -84,7 +84,7 @@ jobs:
       - name: "Run HLint"
         uses: rwe/actions-hlint-run@v2
         with:
-          path: '["extract-cons/src/", "lens-adt/src/", "template-haskell-lenses/src", "template-haskell-natural/src"]'
+          path: '["extract-cons/src/", "lens-adt/src/", "th-lenses/src", "th-builder/src"]'
           fail-on: warning
   Tests:
     runs-on: ubuntu-latest
@@ -122,7 +122,7 @@ jobs:
         run: |
           stack build \
             extract-cons:lib lens-adt:lib \
-            template-haskell-lenses:lib template-haskell-natural:lib \
+            th-lenses:lib th-builder:lib \
             --haddock
 
           echo "HADDOCK_PATH=$(stack path --local-doc-root)" >> $GITHUB_ENV

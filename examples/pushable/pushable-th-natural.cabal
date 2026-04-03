@@ -27,8 +27,8 @@ library
       base
     , linear-base
     , template-haskell
-    , template-haskell-natural
     , th-abstraction
+    , th-builder
     , th-lenses
   default-language: Haskell2010
 
@@ -52,7 +52,7 @@ test-suite unit
     , linear-base
     , pushable-th-natural
     , template-haskell
-    , template-haskell-natural
     , th-abstraction
+    , th-builder
     , th-lenses
   default-language: Haskell2010

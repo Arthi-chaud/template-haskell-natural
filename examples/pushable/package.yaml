@@ -13,7 +13,7 @@ dependencies:
   - base
   - linear-base
   - template-haskell
-  - template-haskell-natural
+  - th-builder
   - th-lenses
   - th-abstraction
 

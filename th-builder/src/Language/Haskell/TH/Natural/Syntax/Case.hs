@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 
 -- | 'Builder' for a case expression.
--- You can find an example usage [here](https://github.com/Arthi-chaud/template-haskell-natural/tree/main/examples/packed).
+-- You can find an example usage [here](https://github.com/Arthi-chaud/th-builder/tree/main/examples/packed).
 module Language.Haskell.TH.Natural.Syntax.Case (
     -- * Builder
     case_,

@@ -11,7 +11,7 @@ dependencies:
   - base
   - packed-data
   - template-haskell
-  - template-haskell-natural
+  - th-builder
   - th-lenses
 
 ghc-options:

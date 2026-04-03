@@ -12,7 +12,7 @@ default-extensions:
 dependencies:
   - base
   - template-haskell
-  - template-haskell-natural
+  - th-builder
   - th-lenses
 
 ghc-options:
